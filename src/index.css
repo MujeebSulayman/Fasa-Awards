@@ -432,39 +432,51 @@ nav.navbar {
   padding:20px;
 }
 
-/* Hero Section */
+/* ── Hero Section: centered, own max-width ── */
 .hero-section {
-  text-align:center;
-  padding:60px 0 40px;
-  color:var(--text-white);
+  text-align: center;
+  padding: 60px 0 40px;
+  color: var(--text-white);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-badge {
-  display:inline-block;
-  padding:6px 16px;
-  background:#fff;
-  color:#000;
-  border-radius:100px;
-  margin-bottom:20px;
+  display: inline-block;
+  padding: 6px 16px;
+  background: #fff;
+  color: #000;
+  border-radius: 100px;
+  margin-bottom: 20px;
 }
 
 .hero-title {
-  font-size:3rem;
-  margin-bottom:20px;
-  color:var(--text-white);
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: var(--text-white);
 }
 
 .hero-subtitle {
-  font-size:1.1rem;
-  color:var(--text-muted);
+  font-size: 1.1rem;
+  color: var(--text-muted);
 }
 
-/* Misc layout */
-/* Category Dropdown Styles */
+@media (max-width: 640px) {
+  .hero-section { padding: 40px 0 24px; }
+  .hero-title { font-size: 2rem; }
+}
+
+/* ── Category Dropdown: fixed width, own breakpoints ── */
 .category-dropdown {
   position: relative;
   display: inline-block;
-  min-width: 180px;
+  width: 220px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .category-dropdown { width: 100%; }
 }
 
 .dropdown-toggle {
@@ -540,19 +552,25 @@ nav.navbar {
   box-shadow: 0 0 0 3px rgba(123, 62, 147, 0.2);
 }
 
+/* ── Search + Filter bar: own max-width, independent of grid ── */
 .search-filter-container {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   align-items: center;
   flex-wrap: wrap;
-  margin: 18px 0 26px;
-  max-width: 900px;
+  margin: 18px 0 32px;
+  max-width: 860px; /* search bar never stretches full page */
 }
 
 .search-wrapper {
   flex: 1;
-  min-width: 260px;
+  min-width: 240px;
   position: relative;
+}
+
+@media (max-width: 640px) {
+  .search-filter-container { flex-direction: column; align-items: stretch; max-width: 100%; }
+  .search-wrapper { min-width: unset; }
 }
 
 .search-icon {
@@ -601,21 +619,29 @@ nav.navbar {
 .category-block { display: flex; flex-direction: column; gap: 14px; }
 .category-header p { color: var(--text-muted); margin-top: 6px; }
 
+/* ── Contestants Grid: full page width, own breakpoints ── */
 .contestants-grid {
   display: grid;
   gap: 28px;
-  grid-template-columns: 1fr; /* Mobile: single column */
+  grid-template-columns: 1fr; /* Mobile: 1 column */
+  width: 100%; /* always fill the full page */
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .contestants-grid {
-    grid-template-columns: repeat(2, 1fr); /* Tablet: two columns */
+    grid-template-columns: repeat(2, 1fr); /* Small tablet: 2 columns */
   }
 }
 
 @media (min-width: 1024px) {
   .contestants-grid {
-    grid-template-columns: repeat(3, 1fr); /* Desktop: three columns */
+    grid-template-columns: repeat(3, 1fr); /* Desktop: 3 columns */
+  }
+}
+
+@media (min-width: 1440px) {
+  .contestants-grid {
+    grid-template-columns: repeat(4, 1fr); /* Wide screens: 4 columns */
   }
 }
 
