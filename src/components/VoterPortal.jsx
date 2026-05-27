@@ -126,7 +126,14 @@ export default function VoterPortal({ currentPath, navigate }) {
     setIsProcessingPayment(true);
 
     const transactionReference = createTransactionReference();
-    const payerEmail = `anonymous+${transactionReference}@fasa.local`;
+    // Paystack requires a valid email format. .local is rejected by Paystack validation.
+    const payerEmail = `anonymous+${transactionReference}@example.com`;
+
+    if (typeof window.PaystackPop.setup !== 'function') {
+      setIsProcessingPayment(false);
+      showToast('Payment service failed to initialize. Please refresh and try again.', 'error');
+      return;
+    }
 
     const handler = window.PaystackPop.setup({
       key: paystackPublicKey,
@@ -134,23 +141,36 @@ export default function VoterPortal({ currentPath, navigate }) {
       amount: amountInKobo,
       currency: 'NGN',
       ref: transactionReference,
-      callback: async (response) => {
-        // Payment successful - record vote
-        await handleRecordVote(
+      callback: function (response) {
+        // Use a non-async callback (some Paystack builds validate typeof === 'function')
+        // Delegate to the async record function and handle errors there.
+        handleRecordVote(
           votingContestant.id,
           payerEmail,
           response.reference,
           votesCount,
           totalAmount
-        );
+        ).catch((err) => {
+          console.error('Error recording vote after payment:', err);
+          showToast('Payment succeeded but recording failed. Contact support.', 'error');
+        });
       },
-      onClose: () => {
+      onClose: function () {
         setIsProcessingPayment(false);
         showToast('Payment cancelled by user.', 'error');
       }
     });
 
-    handler.openIframe();
+    try {
+      if (!handler || typeof handler.openIframe !== 'function') {
+        throw new Error('Payment handler not available');
+      }
+      handler.openIframe();
+    } catch (err) {
+      console.error('Paystack integration error:', err);
+      setIsProcessingPayment(false);
+      showToast('Payment service failed to initialize. Please refresh and try again.', 'error');
+    }
   };
 
   const handleRecordVote = async (contestantId, email, reference, votes, amount) => {

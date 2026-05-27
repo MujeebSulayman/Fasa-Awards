@@ -557,8 +557,9 @@ nav.navbar {
   display: flex;
   gap: 14px;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  margin: 18px 0 32px;
+  margin: 18px auto 32px; /* center the container horizontally */
   max-width: 860px; /* search bar never stretches full page */
 }
 
