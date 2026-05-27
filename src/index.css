@@ -809,9 +809,26 @@ nav.navbar {
   }
 }
 
+/* Contestant detail layout */
+.contestant-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .contestant-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
 @media (max-width: 640px) {
   nav.navbar { padding: 16px 5%; }
   .hero-title { font-size: 2.2rem; }
   .main-content { padding: 28px 5%; }
   .contestants-grid { grid-template-columns: 1fr; }
 }
+

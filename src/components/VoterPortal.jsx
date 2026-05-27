@@ -14,7 +14,7 @@ const createTransactionReference = () =>
   `VOTE-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 const CONTESTANT_LOGO = '/logo.jpg';
 
-export default function VoterPortal() {
+export default function VoterPortal({ currentPath, navigate }) {
   const [categories, setCategories] = useState([]);
   const [contestants, setContestants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,14 +73,33 @@ export default function VoterPortal() {
     fetchData();
   }, [fetchData]);
 
+  // Sync contestant detail page with URL path
+  useEffect(() => {
+    const match = currentPath.match(/^\/contestant\/([a-zA-Z0-9-]+)$/);
+    if (match) {
+      const contestantId = match[1];
+      if (contestants.length > 0) {
+        const found = contestants.find(c => c.id === contestantId);
+        if (found) {
+          setVotingContestant(found);
+        } else {
+          // If not found, revert back to contestants list
+          navigate('/contestants');
+        }
+      }
+    } else {
+      setVotingContestant(null);
+    }
+  }, [currentPath, contestants, navigate]);
+
   const handleOpenVoteModal = (contestant) => {
-    setVotingContestant(contestant);
+    navigate(`/contestant/${contestant.id}`);
     setVotesCount(5); // Default to 5 votes
   };
 
   const handleCloseVoteModal = () => {
     if (isProcessingPayment) return;
-    setVotingContestant(null);
+    navigate('/contestants');
   };
 
   const handlePaystackPayment = () => {
@@ -147,7 +166,7 @@ export default function VoterPortal() {
       if (error) throw error;
 
       if (data && data.success) {
-        // Success
+        // Success details must be set before resetting path
         setSuccessDetails({
           contestantName: votingContestant.name,
           votesCount: votes,
@@ -156,9 +175,9 @@ export default function VoterPortal() {
           email: email
         });
         
-        setVotingContestant(null);
         setShowSuccessModal(true);
         showToast('Vote cast successfully!', 'success');
+        navigate('/contestants');
         
         // Refresh Contestants data to show updated votes counts
         fetchData();
@@ -186,6 +205,222 @@ export default function VoterPortal() {
   const getContestantsByCategory = (catId) => {
     return filteredContestants.filter(c => c.category_id === catId);
   };
+
+  if (votingContestant) {
+    return (
+      <div className="app-container">
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`toast ${toast.type === 'error' ? 'toast-error' : 'toast-success'}`}>
+            {toast.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+            <span>{toast.message}</span>
+          </div>
+        )}
+
+        {/* Navigation Header */}
+        <nav className="navbar">
+          <button 
+            className="btn btn-secondary" 
+            onClick={handleCloseVoteModal}
+            disabled={isProcessingPayment}
+            style={{ padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            ← Back to Nominees
+          </button>
+          <a href="#" className="nav-brand" onClick={(e) => { e.preventDefault(); handleCloseVoteModal(); }}>
+            <img src="/logo.jpg" alt="FASA logo" className="nav-logo" />
+          </a>
+        </nav>
+
+        {/* Main Container */}
+        <main className="main-content">
+          <div className="contestant-detail-layout">
+            {/* Left Column: Large Image & Info */}
+            <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', background: 'rgba(38, 17, 48, 0.4)' }}>
+              <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-glass)', aspectRatio: '1/1', position: 'relative' }}>
+                <img src={CONTESTANT_LOGO} alt={votingContestant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div className="contestant-votes-badge glow" style={{ position: 'absolute', top: '16px', left: '16px' }}>
+                  <Award size={16} />
+                  <span>{votingContestant.votes_count.toLocaleString()} Votes</span>
+                </div>
+              </div>
+              
+              <div>
+                {votingContestant.categories?.name && (
+                  <span className="dash-pill" style={{ marginBottom: '12px', display: 'inline-flex', borderColor: 'var(--accent-pink)', color: '#ffffff', background: 'rgba(236, 72, 153, 0.15)', fontSize: '0.85rem', padding: '6px 14px' }}>
+                    {votingContestant.categories.name}
+                  </span>
+                )}
+                <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-display)', fontWeight: 900, marginTop: '5px' }}>
+                  {votingContestant.name}
+                </h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '10px', lineHeight: 1.6 }}>
+                  Every vote costs ₦100. Casting votes supports your favorite contestant and helps them secure the win. Enter a vote count below to get started.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column: Voting Controls & Payment */}
+            <div className="glass-panel vote-modal" style={{ padding: '30px', background: 'rgba(38, 17, 48, 0.4)' }}>
+              <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '20px', marginBottom: '25px' }}>
+                <h3 style={{ margin: 0, fontSize: '1.6rem', fontFamily: 'var(--font-display)' }}>Cast Your Vote</h3>
+                <div className="vote-modal-subtitle" style={{ fontSize: '0.9rem' }}>Choose quantity and proceed to checkout securely</div>
+              </div>
+
+              <div className="vote-qty" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="vote-qty-row">
+                  <div>
+                    <div className="vote-qty-label" style={{ fontSize: '1.1rem' }}>Quantity</div>
+                    <div className="vote-qty-help" style={{ fontSize: '0.85rem' }}>Set the number of votes to purchase</div>
+                  </div>
+                  
+                  <div className="vote-stepper">
+                    <button
+                      type="button"
+                      className="stepper-btn"
+                      onClick={() => setVotesCount((v) => Math.max(1, v - 1))}
+                      disabled={isProcessingPayment || votesCount <= 1}
+                      aria-label="Decrease"
+                      style={{ width: '50px', height: '46px' }}
+                    >
+                      −
+                    </button>
+                    <div className="stepper-value" style={{ minWidth: '60px', fontSize: '1.2rem' }}>{votesCount}</div>
+                    <button
+                      type="button"
+                      className="stepper-btn"
+                      onClick={() => setVotesCount((v) => Math.min(100, v + 1))}
+                      disabled={isProcessingPayment || votesCount >= 100}
+                      aria-label="Increase"
+                      style={{ width: '50px', height: '46px' }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preset buttons */}
+                <div className="vote-shortcuts" style={{ gap: '12px' }}>
+                  {[1, 3, 5, 10, 20, 50, 100].map(val => (
+                    <button
+                      key={val}
+                      type="button"
+                      className="shortcut-btn"
+                      style={{ 
+                        padding: '10px 20px', 
+                        background: votesCount === val ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)',
+                        borderColor: votesCount === val ? '#7b3e93' : undefined
+                      }}
+                      onClick={() => setVotesCount(val)}
+                      disabled={isProcessingPayment}
+                    >
+                      {val}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cost Box */}
+              <div className="vote-calculation-box" style={{ marginTop: '30px', padding: '20px', gap: '10px' }}>
+                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+                  Total Payment Due
+                </span>
+                <span className="vote-price-display" style={{ fontSize: '2.4rem' }}>
+                  ₦{(votesCount * 100).toLocaleString()}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Pay securely online with Paystack. Instant confirmation.
+                </span>
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: '15px', marginTop: '35px' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ flex: 1, padding: '14px' }} 
+                  onClick={handleCloseVoteModal}
+                  disabled={isProcessingPayment}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="btn btn-primary" 
+                  style={{ flex: 2, padding: '14px' }}
+                  onClick={handlePaystackPayment}
+                  disabled={isProcessingPayment}
+                >
+                  {isProcessingPayment ? (
+                    <>
+                      <div className="spinner" style={{ width: '18px', height: '18px', borderTopColor: 'white' }}></div>
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <ThumbsUp size={18} />
+                      Confirm & Pay
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="footer" style={{ marginTop: '40px' }}>
+          <p>&copy; {new Date().getFullYear()} Fasa Awards Portal.</p>
+        </footer>
+
+        {/* Success Modal */}
+        {showSuccessModal && successDetails && (
+          <div className="modal-overlay" onClick={() => setShowSuccessModal(false)}>
+            <div className="modal-content glass-panel" style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3 style={{ width: '100%' }}>Thank You for Voting!</h3>
+              </div>
+              <div className="modal-body" style={{ padding: '35px 25px' }}>
+                <div className="success-checkmark">
+                  <Check size={40} strokeWidth={3} />
+                </div>
+                
+                <h2 style={{ fontSize: '1.6rem', marginBottom: '8px' }}>Payment Confirmed</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '25px' }}>
+                  We successfully cast {successDetails.votesCount} {successDetails.votesCount === 1 ? 'vote' : 'votes'} for <strong style={{ color: 'var(--text-white)' }}>{successDetails.contestantName}</strong>.
+                </p>
+
+                <div style={{ background: 'rgba(13, 9, 38, 0.6)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Contestant</span>
+                    <strong>{successDetails.contestantName}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Votes Credited</span>
+                    <span style={{ color: 'var(--accent-pink)', fontWeight: 600 }}>{successDetails.votesCount} Votes</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Amount Paid</span>
+                    <strong>₦{successDetails.amount.toLocaleString()}</strong>
+                  </div>
+                  <div style={{ borderTop: '1px solid var(--border-glass)', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
+                    <span>Reference:</span>
+                    <span>{successDetails.reference.slice(0, 18)}...</span>
+                  </div>
+                </div>
+
+                <button 
+                  className="btn btn-primary" 
+                  style={{ width: '100%', marginTop: '30px' }}
+                  onClick={() => setShowSuccessModal(false)}
+                >
+                  Close & Return
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -248,7 +483,7 @@ export default function VoterPortal() {
           </div>
         </div>
 
-        {/* Categories/Contestants Grid */}
+        {/* Contestants Grid */}
         {loading ? (
           <div className="page-loader">
             <div className="spinner"></div>
@@ -261,40 +496,10 @@ export default function VoterPortal() {
             <p>Try resetting filters or searching for another keyword.</p>
           </div>
         ) : (
-          <div className="categories-container">
-            {/* If a specific category is selected, render its cards */}
-            {selectedCategoryFilter !== 'All' ? (
-              <div className="category-block">
-                <div className="category-header">
-                  <h2>{categories.find(c => c.id === selectedCategoryFilter)?.name}</h2>
-                  <p>{categories.find(c => c.id === selectedCategoryFilter)?.description}</p>
-                </div>
-                <div className="contestants-grid">
-                  {filteredContestants.map(con => (
-                    <ContestantCard key={con.id} contestant={con} onVote={handleOpenVoteModal} />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              // If "All" categories is selected, group by categories that have contestants matching filters
-              categories.map(cat => {
-                const catContestants = getContestantsByCategory(cat.id);
-                if (catContestants.length === 0) return null;
-                return (
-                  <div key={cat.id} className="category-block">
-                    <div className="category-header">
-                      <h2>{cat.name}</h2>
-                      <p>{cat.description}</p>
-                    </div>
-                    <div className="contestants-grid">
-                      {catContestants.map(con => (
-                        <ContestantCard key={con.id} contestant={con} onVote={handleOpenVoteModal} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })
-            )}
+          <div className="contestants-grid">
+            {filteredContestants.map(con => (
+              <ContestantCard key={con.id} contestant={con} onVote={handleOpenVoteModal} />
+            ))}
           </div>
         )}
       </main>
@@ -303,121 +508,6 @@ export default function VoterPortal() {
       <footer className="footer">
         <p>&copy; {new Date().getFullYear()} Fasa Awards Portal.</p>
       </footer>
-
-      {/* Vote Modal */}
-      {votingContestant && (
-        <div className="modal-overlay" onClick={handleCloseVoteModal}>
-          <div className="modal-content glass-panel vote-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header vote-modal-header">
-              <div>
-                <h3 style={{ margin: 0 }}>Cast your vote</h3>
-                <div className="vote-modal-subtitle">Choose quantity and confirm payment</div>
-              </div>
-              <button className="modal-close" onClick={handleCloseVoteModal} disabled={isProcessingPayment}>
-                <X size={24} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="vote-modal-contestant">
-                <div className="vote-modal-avatar">
-                  <img src={CONTESTANT_LOGO} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div>
-                  <div className="vote-modal-name">{votingContestant.name}</div>
-                  <div className="vote-modal-category">{votingContestant.categories?.name || 'Category'}</div>
-                </div>
-              </div>
-
-              <div className="vote-qty">
-                <div className="vote-qty-row">
-                  <div>
-                    <div className="vote-qty-label">Quantity</div>
-                    <div className="vote-qty-help">Each vote costs ₦100</div>
-                  </div>
-                  <div className="vote-stepper">
-                    <button
-                      type="button"
-                      className="stepper-btn"
-                      onClick={() => setVotesCount((v) => Math.max(1, v - 1))}
-                      disabled={isProcessingPayment || votesCount <= 1}
-                      aria-label="Decrease"
-                    >
-                      −
-                    </button>
-                    <div className="stepper-value">{votesCount}</div>
-                    <button
-                      type="button"
-                      className="stepper-btn"
-                      onClick={() => setVotesCount((v) => Math.min(100, v + 1))}
-                      disabled={isProcessingPayment || votesCount >= 100}
-                      aria-label="Increase"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-              {/* Preset buttons */}
-              <div className="vote-shortcuts">
-                {[1, 3, 5, 10, 20].map(val => (
-                  <button
-                    key={val}
-                    type="button"
-                    className="shortcut-btn"
-                    style={{ background: votesCount === val ? 'var(--accent-purple)' : undefined }}
-                    onClick={() => setVotesCount(val)}
-                    disabled={isProcessingPayment}
-                  >
-                    {val}
-                  </button>
-                ))}
-              </div>
-              </div>
-
-              {/* Cost Box */}
-              <div className="vote-calculation-box">
-                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Total
-                </span>
-                <span className="vote-price-display">₦{(votesCount * 100).toLocaleString()}</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Payment confirms your vote instantly
-                </span>
-              </div>
-
-              {/* Action buttons */}
-              <div style={{ display: 'flex', gap: '15px', marginTop: '25px' }}>
-                <button 
-                  className="btn btn-secondary" 
-                  style={{ flex: 1 }} 
-                  onClick={handleCloseVoteModal}
-                  disabled={isProcessingPayment}
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="btn btn-primary" 
-                  style={{ flex: 2 }}
-                  onClick={handlePaystackPayment}
-                  disabled={isProcessingPayment}
-                >
-                  {isProcessingPayment ? (
-                    <>
-                      <div className="spinner" style={{ width: '18px', height: '18px', borderTopColor: 'white' }}></div>
-                      Connecting payment...
-                    </>
-                  ) : (
-                    <>
-                      <ThumbsUp size={18} />
-                      Confirm & Pay
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Success Modal */}
       {showSuccessModal && successDetails && (
@@ -480,6 +570,20 @@ function ContestantCard({ contestant, onVote }) {
       
       <div className="contestant-info">
         <div className="contestant-meta">
+          {contestant.categories?.name && (
+            <span 
+              className="dash-pill" 
+              style={{ 
+                marginBottom: '10px', 
+                display: 'inline-flex', 
+                borderColor: 'var(--accent-pink)', 
+                color: '#ffffff', 
+                background: 'rgba(236, 72, 153, 0.15)' 
+              }}
+            >
+              {contestant.categories.name}
+            </span>
+          )}
           <h3>{contestant.name}</h3>
         </div>
         

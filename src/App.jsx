@@ -4,32 +4,45 @@ import VoterPortal from './components/VoterPortal.jsx';
 import AdminPortal from './components/AdminPortal.jsx';
 
 function App() {
-  const [view, setView] = useState('landing'); // 'landing' | 'voter' | 'admin'
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
-  // This app doesn't use routes; normalize accidental paths like "/login" back to "/".
+  // Custom router state listener
   useEffect(() => {
-    if (window.location.pathname !== '/') {
-      window.history.replaceState(null, '', '/');
-    }
-  }, []);
-
-  // Lightweight "admin access" via URL hash (no visible button for voters).
-  useEffect(() => {
-    const applyHashView = () => {
-      if (window.location.hash === '#admin') setView('admin');
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
     };
-    applyHashView();
-    window.addEventListener('hashchange', applyHashView);
-    return () => window.removeEventListener('hashchange', applyHashView);
+    window.addEventListener('popstate', handleLocationChange);
+    // Custom event to listen to pushState triggers
+    window.addEventListener('pushstate-navigate', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('pushstate-navigate', handleLocationChange);
+    };
   }, []);
+
+  const navigate = (path) => {
+    window.history.pushState(null, '', path);
+    window.dispatchEvent(new Event('pushstate-navigate'));
+  };
+
+  const isContestantPath = currentPath.startsWith('/contestant/');
+  const isContestantsPath = currentPath === '/contestants';
+  const isAdminPath = currentPath === '/admin';
 
   return (
     <div style={{ background: '#000', minHeight: '100vh', color: '#fff' }}>
-      {view === 'landing' && <LandingPage onEnter={() => setView('voter')} />}
-      {view === 'voter'   && <VoterPortal />}
-      {view === 'admin'   && <AdminPortal onNavigateToVoter={() => { window.location.hash = ''; setView('voter'); }} />}
+      {(currentPath === '/' || (!isContestantsPath && !isContestantPath && !isAdminPath)) && (
+        <LandingPage onEnter={() => navigate('/contestants')} />
+      )}
+      {(isContestantsPath || isContestantPath) && (
+        <VoterPortal currentPath={currentPath} navigate={navigate} />
+      )}
+      {isAdminPath && (
+        <AdminPortal onNavigateToVoter={() => navigate('/contestants')} navigate={navigate} />
+      )}
     </div>
   );
 }
 
 export default App;
+
