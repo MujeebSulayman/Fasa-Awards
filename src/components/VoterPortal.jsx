@@ -561,24 +561,29 @@ export default function VoterPortal({ currentPath, navigate }) {
 }
 
 // Contestant Card Component
+// Contestant Card Component
 function ContestantCard({ contestant, onVote }) {
   return (
-    <div className="contestant-card glass-panel">
+    <div
+      className="contestant-card glass-panel"
+      onClick={() => onVote(contestant)}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="contestant-image-wrapper">
         <img src={CONTESTANT_LOGO} alt={contestant.name} className="contestant-img" />
       </div>
-      
+
       <div className="contestant-info">
         <div className="contestant-meta">
           {contestant.categories?.name && (
-            <span 
-              className="dash-pill" 
-              style={{ 
-                marginBottom: '10px', 
-                display: 'inline-flex', 
-                borderColor: 'var(--accent-pink)', 
-                color: '#ffffff', 
-                background: 'rgba(236, 72, 153, 0.15)' 
+            <span
+              className="dash-pill"
+              style={{
+                marginBottom: '10px',
+                display: 'inline-flex',
+                borderColor: 'var(--accent-pink)',
+                color: '#ffffff',
+                background: 'rgba(236, 72, 153, 0.15)'
               }}
             >
               {contestant.categories.name}
@@ -586,11 +591,11 @@ function ContestantCard({ contestant, onVote }) {
           )}
           <h3>{contestant.name}</h3>
         </div>
-        
-        <button 
-          className="btn btn-outline-glow" 
+        {/* The button is retained for accessibility but hidden */}
+        <button
+          className="btn btn-outline-glow"
           style={{ width: '100%', marginTop: '15px' }}
-          onClick={() => onVote(contestant)}
+          onClick={(e) => { e.stopPropagation(); onVote(contestant); }}
         >
           Vote For {(contestant?.name || 'Contestant').split(' ')[0]}
         </button>

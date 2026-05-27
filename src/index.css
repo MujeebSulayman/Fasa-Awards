@@ -1,6 +1,30 @@
 /* Logo-aligned solid color theme */
 :root {
+:root {
   --bg-dark: #180920;
+  --bg-card: #24102f;
+  --bg-deep: #2d1538;
+  --text-white: #ffffff;
+  --text-muted: #c9b993;
+  --border-glass: #5a3d66;
+  --accent-purple: #5c1970;
+  --accent-pink: #8f2a6d;
+  --accent-blue: #b4871f;
+  --dash-bg: #17081e;
+  --dash-panel: #24102f;
+  --dash-panel-strong: #2c1437;
+  --dash-border: #5a3d66;
+  --dash-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Hide vote count badge from UI */
+.contestant-votes-badge { display: none; }
+
+/* Reduce boldness for category badges */
+.dash-pill { font-weight: 400; }
   --bg-card: #24102f;
   --bg-deep: #2d1538;
   --text-white: #ffffff;
@@ -362,6 +386,21 @@ nav.navbar {
 .btn-primary {
   background:#f1ddac;
   color:#2b1236;
+}
+.btn-outline-glow {
+  background: transparent;
+  color: var(--accent-pink);
+  border: 2px solid var(--accent-pink);
+  border-radius: 12px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 0 5px rgba(236, 72, 153, 0.3);
+}
+
+.btn-outline-glow:hover {
+  box-shadow: 0 0 15px 2px rgba(236, 72, 153, 0.6);
+  transform: scale(1.03);
 }
 
 .btn-secondary {
