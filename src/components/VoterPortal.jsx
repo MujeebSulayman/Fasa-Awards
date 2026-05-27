@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import CategoryDropdown from './CategoryDropdown';
 import { 
   Search, 
   Award, 
@@ -444,10 +445,6 @@ export default function VoterPortal({ currentPath, navigate }) {
         {/* Hero Banner */}
         <section className="hero-section">
           <h1 className="hero-title">Support Your Favorites</h1>
-          <p className="hero-subtitle">
-            Cast your votes securely. Each vote is ₦100. 
-            Vote as many times as you like to push your favorite contestant to the top!
-          </p>
         </section>
 
         {/* Search and Filters */}
@@ -462,25 +459,12 @@ export default function VoterPortal({ currentPath, navigate }) {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button 
-              className={`shortcut-btn ${selectedCategoryFilter === 'All' ? 'btn-primary' : ''}`}
-              style={{ background: selectedCategoryFilter === 'All' ? undefined : 'rgba(255,255,255,0.05)' }}
-              onClick={() => setSelectedCategoryFilter('All')}
-            >
-              All Categories
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                className={`shortcut-btn ${selectedCategoryFilter === cat.id ? 'btn-primary' : ''}`}
-                style={{ background: selectedCategoryFilter === cat.id ? undefined : 'rgba(255,255,255,0.05)' }}
-                onClick={() => setSelectedCategoryFilter(cat.id)}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
+          {/* Redesign: Custom Category Dropdown */}
+          <CategoryDropdown
+            categories={categories}
+            selected={selectedCategoryFilter}
+            onSelect={setSelectedCategoryFilter}
+          />
         </div>
 
         {/* Contestants Grid */}

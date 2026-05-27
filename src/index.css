@@ -460,6 +460,64 @@ nav.navbar {
 }
 
 /* Misc layout */
+/* Category Dropdown Styles */
+.category-dropdown {
+  position: relative;
+  display: inline-block;
+  min-width: 180px;
+}
+
+.dropdown-toggle {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-glass);
+  color: var(--text-white);
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dropdown-toggle .arrow {
+  border: solid var(--text-white);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+}
+
+.dropdown-toggle .arrow.up {
+  transform: rotate(-135deg);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  margin-top: 4px;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--text-white);
+}
+
+.dropdown-item:hover,
+.dropdown-item.selected {
+  background: var(--accent-pink);
+  color: #fff;
+}
 .app-container {display:flex;flex-direction:column;min-height:100vh;}
 .main-content {flex:1;padding:40px 5%;max-width:1400px;margin:0 auto;}
 .footer {text-align:center;padding:30px;border-top:1px solid var(--text-muted);color:var(--text-muted);}
@@ -545,11 +603,28 @@ nav.navbar {
 
 .contestants-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+  grid-template-columns: 1fr; /* Mobile: single column */
 }
 
+@media (min-width: 640px) {
+  .contestants-grid {
+    grid-template-columns: repeat(2, 1fr); /* Tablet: two columns */
+  }
+}
+
+@media (min-width: 1024px) {
+  .contestants-grid {
+    grid-template-columns: repeat(3, 1fr); /* Desktop: three columns */
+  }
+}
+
+
+.contestant-card h3 {
+  font-weight: 400; /* Normal weight, not bold */
+}
 .contestant-card {
+  width: 100%;
   overflow: hidden;
   border: 1px solid var(--border-glass);
   background: #261130;
@@ -825,7 +900,14 @@ nav.navbar {
 }
 .status-success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7; }
 
-/* Responsive */
+@media (max-width: 640px) {
+  .category-dropdown {
+    width: 100%;
+  }
+  .dropdown-toggle {
+    width: 100%;
+  }
+}
 @media (max-width: 1024px) {
   .contestants-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-layout { grid-template-columns: 1fr; }
