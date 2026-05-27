@@ -128,10 +128,10 @@ const styles = {
   root: {
     minHeight: '100vh',
     background: '#180920',
-    color: '#f6edd4',
+    color: '#ffffff',
     display: 'flex',
     flexDirection: 'column',
-    fontFamily: "'Georgia', 'Times New Roman', serif",
+    fontFamily: "var(--font-body)",
     overflowX: 'hidden',
   },
   nav: {
@@ -153,7 +153,7 @@ const styles = {
   navYear: {
     opacity: 0.8,
     letterSpacing: '0.2em',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: '0.85rem',
   },
   hero: {
@@ -180,7 +180,7 @@ const styles = {
     marginBottom: '28px',
   },
   eyebrow: {
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-display)",
     fontSize: '0.7rem',
     letterSpacing: '0.35em',
     opacity: 0.85,
@@ -193,7 +193,7 @@ const styles = {
     lineHeight: 1,
     letterSpacing: '-0.02em',
     marginBottom: '8px',
-    fontFamily: "'Georgia', serif",
+    fontFamily: "var(--font-display)",
   },
   titleOutline: {
     WebkitTextStroke: '2px #b4871f',
@@ -205,7 +205,7 @@ const styles = {
     letterSpacing: '0.05em',
     lineHeight: 1.7,
     marginTop: '32px',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-body)",
     fontWeight: 300,
   },
   divider: {
@@ -221,7 +221,7 @@ const styles = {
     padding: '18px 56px',
     fontSize: '0.8rem',
     letterSpacing: '0.3em',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-display)",
     cursor: 'pointer',
     transition: 'background 0.3s ease, color 0.3s ease',
     textTransform: 'uppercase',
@@ -231,16 +231,16 @@ const styles = {
     fontSize: '0.75rem',
     opacity: 0.7,
     letterSpacing: '0.1em',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-body)",
   },
   hintButton: {
     marginTop: '32px',
     fontSize: '0.75rem',
     opacity: 0.75,
     letterSpacing: '0.1em',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-display)",
     background: 'transparent',
-    color: '#f6edd4',
+    color: '#ffffff',
     border: 'none',
     cursor: 'pointer',
     textTransform: 'uppercase',
@@ -263,14 +263,14 @@ const styles = {
   statValue: {
     fontSize: '2.2rem',
     fontWeight: 300,
-    fontFamily: "'Georgia', serif",
+    fontFamily: "var(--font-display)",
     letterSpacing: '-0.02em',
   },
   statLabel: {
     fontSize: '0.65rem',
     letterSpacing: '0.25em',
     opacity: 0.85,
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-display)",
     textTransform: 'uppercase',
   },
   footer: {
@@ -279,6 +279,6 @@ const styles = {
     fontSize: '0.7rem',
     opacity: 0.8,
     letterSpacing: '0.1em',
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "var(--font-body)",
   },
 };

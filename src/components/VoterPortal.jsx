@@ -175,8 +175,7 @@ export default function VoterPortal() {
 
   // Filter contestants based on search query and category tab
   const filteredContestants = contestants.filter(con => {
-    const matchesSearch = con.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (con.bio && con.bio.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = con.name.toLowerCase().includes(searchQuery.toLowerCase());
       
     const matchesCategory = selectedCategoryFilter === 'All' || con.category_id === selectedCategoryFilter;
     
@@ -223,7 +222,7 @@ export default function VoterPortal() {
             <input 
               type="text" 
               className="input-control" 
-              placeholder="Search contestants by name or bio..."
+              placeholder="Search contestants by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -482,7 +481,6 @@ function ContestantCard({ contestant, onVote }) {
       <div className="contestant-info">
         <div className="contestant-meta">
           <h3>{contestant.name}</h3>
-          <p>{contestant.bio || 'No bio provided. Show your support by voting for them!'}</p>
         </div>
         
         <button 

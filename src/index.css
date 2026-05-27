@@ -3,7 +3,7 @@
   --bg-dark: #180920;
   --bg-card: #24102f;
   --bg-deep: #2d1538;
-  --text-white: #f6edd4;
+  --text-white: #ffffff;
   --text-muted: #c9b993;
   --border-glass: #5a3d66;
   --accent-purple: #5c1970;
@@ -491,7 +491,7 @@ nav.navbar {
 .shortcut-btn.btn-primary {
   background: var(--accent-purple);
   border-color: #7b3e93;
-  color: #f7edd3;
+  color: var(--text-white);
 }
 
 /* Contestants */
