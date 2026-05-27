@@ -329,9 +329,6 @@ export default function VoterPortal({ currentPath, navigate }) {
                 <span className="vote-price-display" style={{ fontSize: '2.4rem' }}>
                   ₦{(votesCount * 100).toLocaleString()}
                 </span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  Pay securely online with Paystack. Instant confirmation.
-                </span>
               </div>
 
               {/* Action buttons */}
