@@ -390,17 +390,17 @@ nav.navbar {
 .btn-outline-glow {
   background: transparent;
   color: var(--accent-pink);
-  border: 2px solid var(--accent-pink);
+  border: 1px solid var(--accent-pink);
   border-radius: 12px;
   padding: 12px 24px;
   cursor: pointer;
   transition: box-shadow 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 0 5px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 0 3px rgba(236, 72, 153, 0.15);
 }
 
 .btn-outline-glow:hover {
-  box-shadow: 0 0 15px 2px rgba(236, 72, 153, 0.6);
-  transform: scale(1.03);
+  box-shadow: 0 0 8px 1px rgba(236, 72, 153, 0.3);
+  transform: scale(1.02);
 }
 
 .btn-secondary {
@@ -519,7 +519,7 @@ nav.navbar {
   color: #fff;
 }
 .app-container {display:flex;flex-direction:column;min-height:100vh;}
-.main-content {flex:1;padding:40px 5%;max-width:1400px;margin:0 auto;}
+.main-content {flex:1;padding:40px 2%;width:100%;}
 .footer {text-align:center;padding:30px;border-top:1px solid var(--text-muted);color:var(--text-muted);}
 
 /* Inputs + search */
@@ -544,9 +544,9 @@ nav.navbar {
   display: flex;
   gap: 16px;
   align-items: center;
-  justify-content: space-between;
   flex-wrap: wrap;
   margin: 18px 0 26px;
+  max-width: 900px;
 }
 
 .search-wrapper {
@@ -603,7 +603,7 @@ nav.navbar {
 
 .contestants-grid {
   display: grid;
-  gap: 18px;
+  gap: 28px;
   grid-template-columns: 1fr; /* Mobile: single column */
 }
 
