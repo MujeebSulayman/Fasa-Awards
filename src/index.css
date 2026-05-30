@@ -86,7 +86,7 @@ h6 {
 
 .dash-layout {
 	display: grid;
-	grid-template-columns: 280px 1fr;
+	grid-template-columns: 280px minmax(0, 1fr);
 	min-height: 100vh;
 }
 
@@ -157,6 +157,8 @@ h6 {
 
 .dash-main {
 	padding: 18px 18px 36px;
+	min-width: 0;
+	overflow-x: hidden;
 }
 
 .dash-topbar {
@@ -204,6 +206,8 @@ h6 {
 
 .dash-content {
 	margin-top: 16px;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .dash-header {
@@ -359,7 +363,7 @@ h6 {
 
 @media (max-width: 1024px) {
 	.dash-layout {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 	.dash-sidebar {
 		position: fixed;
@@ -1605,5 +1609,21 @@ nav.navbar {
     padding: 8px 12px;
     font-size: 0.85rem;
     border-radius: 8px;
+  }
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .leaderboard-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

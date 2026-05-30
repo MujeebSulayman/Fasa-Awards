@@ -1063,31 +1063,27 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 														<td>
 															{new Date(cat.created_at).toLocaleDateString()}
 														</td>
-														<td
-															style={{
-																textAlign: 'right',
-																display: 'flex',
-																gap: '8px',
-																justifyContent: 'flex-end',
-															}}>
-															<button
-																className='btn btn-secondary'
-																style={{
-																	padding: '6px 12px',
-																	fontSize: '0.8rem',
-																}}
-																onClick={() => handleStartEditCategory(cat)}>
-																<Edit3 size={13} /> Edit
-															</button>
-															<button
-																className='btn btn-danger'
-																style={{
-																	padding: '6px 12px',
-																	fontSize: '0.8rem',
-																}}
-																onClick={() => handleDeleteCategory(cat.id)}>
-																<Trash2 size={13} /> Delete
-															</button>
+														<td style={{ textAlign: 'right' }}>
+															<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+																<button
+																	className='btn btn-secondary'
+																	style={{
+																		padding: '6px 12px',
+																		fontSize: '0.8rem',
+																	}}
+																	onClick={() => handleStartEditCategory(cat)}>
+																	<Edit3 size={13} /> Edit
+																</button>
+																<button
+																	className='btn btn-danger'
+																	style={{
+																		padding: '6px 12px',
+																		fontSize: '0.8rem',
+																	}}
+																	onClick={() => handleDeleteCategory(cat.id)}>
+																	<Trash2 size={13} /> Delete
+																</button>
+															</div>
 														</td>
 													</tr>
 												))}
@@ -1367,35 +1363,31 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 																		₦{(con.votes_count * 100).toLocaleString()}
 																	</strong>
 																</td>
-																<td
-																	style={{
-																		textAlign: 'right',
-																		display: 'flex',
-																		gap: '8px',
-																		justifyContent: 'flex-end',
-																	}}>
-																	<button
-																		className='btn btn-secondary'
-																		style={{
-																			padding: '6px 12px',
-																			fontSize: '0.8rem',
-																		}}
-																		onClick={() =>
-																			handleStartEditContestant(con)
-																		}>
-																		<Edit3 size={13} /> Edit
-																	</button>
-																	<button
-																		className='btn btn-danger'
-																		style={{
-																			padding: '6px 12px',
-																			fontSize: '0.8rem',
-																		}}
-																		onClick={() =>
-																			handleDeleteContestant(con.id)
-																		}>
-																		<Trash2 size={13} /> Delete
-																	</button>
+																<td style={{ textAlign: 'right' }}>
+																	<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+																		<button
+																			className='btn btn-secondary'
+																			style={{
+																				padding: '6px 12px',
+																				fontSize: '0.8rem',
+																			}}
+																			onClick={() =>
+																				handleStartEditContestant(con)
+																			}>
+																			<Edit3 size={13} /> Edit
+																		</button>
+																		<button
+																			className='btn btn-danger'
+																			style={{
+																				padding: '6px 12px',
+																				fontSize: '0.8rem',
+																			}}
+																			onClick={() =>
+																				handleDeleteContestant(con.id)
+																			}>
+																			<Trash2 size={13} /> Delete
+																		</button>
+																	</div>
 																</td>
 															</tr>
 														))}
@@ -1440,15 +1432,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 														padding: '24px',
 														background: 'rgba(13,9,38,0.2)',
 													}}>
-													<div
-														style={{
-															display: 'flex',
-															justifyContent: 'space-between',
-															alignItems: 'center',
-															borderBottom: '1px solid var(--border-glass)',
-															paddingBottom: '12px',
-															marginBottom: '15px',
-														}}>
+													<div className='leaderboard-header'>
 														<div>
 															<h3
 																style={{
