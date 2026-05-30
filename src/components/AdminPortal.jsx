@@ -19,14 +19,19 @@ import {
   Search,
   AlertCircle,
   CheckCircle,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Mail,
+  LockKeyhole,
+  Eye,
+  EyeOff,
+  LogIn
 } from 'lucide-react';
 
 const CONTESTANT_LOGO = '/logo.jpg';
 
-export default function AdminPortal({ onNavigateToVoter }) {
+export default function AdminPortal({ onNavigateToVoter, navigate }) {
   const [session, setSession] = useState(null);
-  const [authView, setAuthView] = useState('login'); // 'login' or 'signup'
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
@@ -176,7 +181,6 @@ export default function AdminPortal({ onNavigateToVoter }) {
     if (session) loadAdminData();
   }, [activeTab, loadAdminData, session]);
 
-  // Auth Handlers
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -186,16 +190,9 @@ export default function AdminPortal({ onNavigateToVoter }) {
     
     setAuthLoading(true);
     try {
-      if (authView === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        showToast('Welcome back, Admin!', 'success');
-      } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        showToast('Registration successful! Check your email or try logging in.', 'success');
-        setAuthView('login');
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      showToast('Welcome back, Admin!', 'success');
     } catch (error) {
       showToast(error.message || 'Authentication failed.', 'error');
     } finally {
@@ -398,73 +395,81 @@ export default function AdminPortal({ onNavigateToVoter }) {
           </button>
         </nav>
 
-        <main className="main-content">
-          <div className="auth-container glass-panel">
-            <div className="auth-header">
-              <div style={{ display: 'inline-flex', padding: '12px', background: 'rgba(139, 92, 246, 0.1)', color: 'var(--accent-purple)', borderRadius: '12px', marginBottom: '15px' }}>
-                <Lock size={28} />
+        <main className="admin-login-container">
+          <div className="admin-login-glow"></div>
+          
+          <div className="admin-login-card">
+            <div className="admin-login-header">
+              <div className="admin-login-logo-box">
+                <LockKeyhole size={32} />
               </div>
-              <h2>Admin Control Desk</h2>
-              <p>
-                {authView === 'login' 
-                  ? 'Sign in to configure categories and upload contestants' 
-                  : 'Establish a new administrator profile'}
-              </p>
+              <h2>Admin Console</h2>
+              <p>Sign in to manage categories, contestants and view voting logs</p>
             </div>
 
             <form onSubmit={handleAuthSubmit}>
-              <div className="form-group">
-                <label>Email Address</label>
-                <input 
-                  type="email" 
-                  className="input-control" 
-                  placeholder="admin@fasaawards.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required 
-                />
+              <div className="admin-login-input-group">
+                <label className="admin-login-label">Email Address</label>
+                <div className="admin-login-field-wrapper">
+                  <input 
+                    type="email" 
+                    className="admin-login-input" 
+                    placeholder="admin@fasaawards.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                  />
+                  <Mail size={18} className="admin-login-icon" />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Password</label>
-                <input 
-                  type="password" 
-                  className="input-control" 
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
+              <div className="admin-login-input-group">
+                <label className="admin-login-label">Password</label>
+                <div className="admin-login-field-wrapper">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    className="admin-login-input has-toggle" 
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required 
+                  />
+                  <Lock size={18} className="admin-login-icon" />
+                  <button
+                    type="button"
+                    className="admin-login-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button 
                 type="submit" 
-                className="btn btn-primary" 
-                style={{ width: '100%', marginTop: '10px' }}
+                className="admin-login-submit-btn"
                 disabled={authLoading}
               >
                 {authLoading ? (
-                  <div className="spinner" style={{ width: '18px', height: '18px', borderTopColor: 'white' }}></div>
-                ) : authView === 'login' ? 'Access Console' : 'Register Admin'}
+                  <>
+                    <div className="spinner" style={{ width: '18px', height: '18px', borderWidth: '2px', borderTopColor: '#2b1236' }}></div>
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn size={18} />
+                    <span>Access Console</span>
+                  </>
+                )}
               </button>
             </form>
 
-            <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.85rem' }}>
-              {authView === 'login' ? (
-                <p style={{ color: 'var(--text-muted)' }}>
-                  Need an account?{' '}
-                  <a href="#" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontWeight: 600 }} onClick={(e) => { e.preventDefault(); setAuthView('signup'); }}>
-                    Create account
-                  </a>
-                </p>
-              ) : (
-                <p style={{ color: 'var(--text-muted)' }}>
-                  Already registered?{' '}
-                  <a href="#" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontWeight: 600 }} onClick={(e) => { e.preventDefault(); setAuthView('login'); }}>
-                    Log in here
-                  </a>
-                </p>
-              )}
+            <div className="admin-login-footer">
+              <a href="#" className="admin-login-back-link" onClick={(e) => { e.preventDefault(); onNavigateToVoter(); }}>
+                <ChevronLeft size={16} />
+                <span>Return to Voter Portal</span>
+              </a>
             </div>
           </div>
         </main>
