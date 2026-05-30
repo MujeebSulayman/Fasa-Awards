@@ -13,7 +13,7 @@ import {
 
 const createTransactionReference = () =>
 	`VOTE-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-const CONTESTANT_LOGO = '/logo.jpg';
+const CONTESTANT_LOGO = '/awards.jpg';
 
 export default function VoterPortal({ currentPath, navigate }) {
 	const [categories, setCategories] = useState([]);
