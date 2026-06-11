@@ -2039,7 +2039,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 										Review the latest verified votes.
 									</p>
 
-								
+
 									<div className="filter-toolbar">
 										<div className="filter-item" style={{ flex: '2' }}>
 											<label>Search Transactions</label>
