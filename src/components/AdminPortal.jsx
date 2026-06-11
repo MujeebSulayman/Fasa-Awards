@@ -95,7 +95,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 	const [txSearchQuery, setTxSearchQuery] = useState('');
 	const [txCategoryFilter, setTxCategoryFilter] = useState('all');
 	const [txDateFilter, setTxDateFilter] = useState('all');
-	
+
 	// Chart interactive states
 	const [hoveredChartIndex, setHoveredChartIndex] = useState(null);
 	const [hoveredDonutIndex, setHoveredDonutIndex] = useState(null);
@@ -196,7 +196,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 				(tx.email && tx.email.toLowerCase().includes(txSearchQuery.toLowerCase())) ||
 				(tx.contestants?.name && tx.contestants.name.toLowerCase().includes(txSearchQuery.toLowerCase()));
 
-			const matchesCategory = txCategoryFilter === 'all' || 
+			const matchesCategory = txCategoryFilter === 'all' ||
 				(tx.contestants?.category_id === txCategoryFilter);
 
 			let matchesDate = true;
@@ -820,481 +820,481 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 							}
 							return (
 								<div className="page-fade-in">
-								<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
-									Performance Metrics
-								</h2>
-								<div className='stats-grid'>
-									<div className='stat-card glass-panel'>
-										<div
-											className='stat-icon'
-											style={{
-												color: '#ec4899',
-												background: 'rgba(236,72,153,0.1)',
-											}}>
-											<Users size={24} />
-										</div>
-										<div className='stat-info'>
-											<span className='stat-label'>Total Votes Cast</span>
-											<span className='stat-value'>
-												{stats.totalVotes.toLocaleString()}
-											</span>
-										</div>
-									</div>
-
-									<div className='stat-card glass-panel'>
-										<div
-											className='stat-icon'
-											style={{
-												color: '#10b981',
-												background: 'rgba(16,185,129,0.1)',
-											}}>
-											<DollarSign size={24} />
-										</div>
-										<div className='stat-info'>
-											<span className='stat-label'>Revenue Generated</span>
-											<span className='stat-value'>
-												₦{stats.totalCash.toLocaleString()}
-											</span>
-										</div>
-									</div>
-
-									<div className='stat-card glass-panel'>
-										<div
-											className='stat-icon'
-											style={{
-												color: '#3b82f6',
-												background: 'rgba(59,130,246,0.1)',
-											}}>
-											<Layers size={24} />
-										</div>
-										<div className='stat-info'>
-											<span className='stat-label'>Categories</span>
-											<span className='stat-value'>
-												{stats.categoriesCount}
-											</span>
-										</div>
-									</div>
-
-									<div className='stat-card glass-panel'>
-										<div
-											className='stat-icon'
-											style={{
-												color: '#8b5cf6',
-												background: 'rgba(139,92,246,0.1)',
-											}}>
-											<Users size={24} />
-										</div>
-										<div className='stat-info'>
-											<span className='stat-label'>Contestants</span>
-											<span className='stat-value'>
-												{stats.contestantsCount}
-											</span>
-										</div>
-									</div>
-								</div>
-
-								{/* Custom interactive SVG charts section */}
-								<div className="chart-card-grid">
-									{/* SVG Line Chart: Revenue & Votes Trend */}
-									<div className="chart-container-panel">
-										<div className="chart-header">
-											<div className="chart-header-title">Voting & Revenue Trend</div>
-											<div className="chart-legend">
-												<div className="chart-legend-item">
-													<div className="chart-legend-dot" style={{ background: 'var(--accent-rose)' }}></div>
-													<span>Votes cast</span>
-												</div>
+									<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
+										Performance Metrics
+									</h2>
+									<div className='stats-grid'>
+										<div className='stat-card glass-panel'>
+											<div
+												className='stat-icon'
+												style={{
+													color: '#ec4899',
+													background: 'rgba(236,72,153,0.1)',
+												}}>
+												<Users size={24} />
+											</div>
+											<div className='stat-info'>
+												<span className='stat-label'>Total Votes Cast</span>
+												<span className='stat-value'>
+													{stats.totalVotes.toLocaleString()}
+												</span>
 											</div>
 										</div>
-										<div className="chart-svg-wrap">
-											{(() => {
-												const lineData = getLineChartData();
-												if (lineData.length === 0) {
-													return (
-														<div style={{ height: '100%', display: 'grid', placeItems: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-															No voting history to display trend yet.
-														</div>
-													);
-												}
 
-												const width = 500;
-												const height = 200;
-												const padLeft = 45;
-												const padRight = 15;
-												const padTop = 15;
-												const padBottom = 30;
-												const plotW = width - padLeft - padRight;
-												const plotH = height - padTop - padBottom;
-												
-												const maxVotes = Math.max(...lineData.map(d => d.votes), 5);
-												const minVotes = 0;
-												
-												// Generate points
-												const points = lineData.map((d, i) => {
-													const x = padLeft + (i * (plotW / (lineData.length - 1 || 1)));
-													const y = padTop + plotH - ((d.votes - minVotes) / (maxVotes - minVotes)) * plotH;
-													return { x, y, data: d, index: i };
-												});
+										<div className='stat-card glass-panel'>
+											<div
+												className='stat-icon'
+												style={{
+													color: '#10b981',
+													background: 'rgba(16,185,129,0.1)',
+												}}>
+												<DollarSign size={24} />
+											</div>
+											<div className='stat-info'>
+												<span className='stat-label'>Revenue Generated</span>
+												<span className='stat-value'>
+													₦{stats.totalCash.toLocaleString()}
+												</span>
+											</div>
+										</div>
 
-												const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-												const areaD = points.length > 0
-													? `${pathD} L ${points[points.length - 1].x} ${padTop + plotH} L ${points[0].x} ${padTop + plotH} Z`
-													: '';
+										<div className='stat-card glass-panel'>
+											<div
+												className='stat-icon'
+												style={{
+													color: '#3b82f6',
+													background: 'rgba(59,130,246,0.1)',
+												}}>
+												<Layers size={24} />
+											</div>
+											<div className='stat-info'>
+												<span className='stat-label'>Categories</span>
+												<span className='stat-value'>
+													{stats.categoriesCount}
+												</span>
+											</div>
+										</div>
 
-												return (
-													<>
-														<svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%" preserveAspectRatio="none">
-															<defs>
-																<linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-																	<stop offset="0%" stopColor="var(--accent-rose)" />
-																	<stop offset="100%" stopColor="var(--accent-pink)" />
-																</linearGradient>
-																<linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-																	<stop offset="0%" stopColor="var(--accent-rose)" stopOpacity="0.25" />
-																	<stop offset="100%" stopColor="var(--accent-rose)" stopOpacity="0.0" />
-																</linearGradient>
-															</defs>
-
-															{/* Grid lines */}
-															<line x1={padLeft} y1={padTop} x2={width - padRight} y2={padTop} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-															<line x1={padLeft} y1={padTop + plotH / 2} x2={width - padRight} y2={padTop + plotH / 2} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-															<line x1={padLeft} y1={padTop + plotH} x2={width - padRight} y2={padTop + plotH} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-
-															{/* Y Axis Labels */}
-															<text x={padLeft - 10} y={padTop + 4} fill="var(--text-muted)" fontSize="8" textAnchor="end">{maxVotes}</text>
-															<text x={padLeft - 10} y={padTop + plotH / 2 + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">{Math.round(maxVotes / 2)}</text>
-															<text x={padLeft - 10} y={padTop + plotH + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">0</text>
-
-															{/* Area & Line */}
-															{points.length > 0 && (
-																<>
-																	<path d={areaD} fill="url(#areaGrad)" />
-																	<path d={pathD} fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" className="chart-line-path" />
-																</>
-															)}
-
-															{/* X Axis Labels & Dots */}
-															{points.map((p, i) => (
-																<g key={i}>
-																	<text x={p.x} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="middle">{p.data.date}</text>
-																	<circle
-																		cx={p.x}
-																		cy={p.y}
-																		r={hoveredChartIndex === i ? 6 : 3.5}
-																		fill={hoveredChartIndex === i ? '#ffffff' : 'var(--accent-rose)'}
-																		stroke={hoveredChartIndex === i ? 'var(--accent-amethyst)' : '#180920'}
-																		strokeWidth="1.5"
-																		className="chart-circle-node"
-																		onMouseEnter={(e) => {
-																			setHoveredChartIndex(i);
-																			const rect = e.target.getBoundingClientRect();
-																			const parentRect = e.target.parentElement.parentElement.getBoundingClientRect();
-																			setTooltipPos({
-																				x: rect.left - parentRect.left + 8,
-																				y: rect.top - parentRect.top - 60,
-																				show: true,
-																				label: p.data.date,
-																				value: `${p.data.votes.toLocaleString()} Votes (₦${p.data.revenue.toLocaleString()})`
-																			});
-																		}}
-																		onMouseLeave={() => {
-																			setHoveredChartIndex(null);
-																			setTooltipPos(prev => ({ ...prev, show: false }));
-																		}}
-																	/>
-																</g>
-															))}
-														</svg>
-														{tooltipPos.show && hoveredChartIndex !== null && (
-															<div className="chart-tooltip-bubble" style={{ left: tooltipPos.x, top: tooltipPos.y }}>
-																<strong style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tooltipPos.label}</strong>
-																<span style={{ fontWeight: 700, color: '#fff' }}>{tooltipPos.value}</span>
-															</div>
-														)}
-													</>
-												);
-											})()}
+										<div className='stat-card glass-panel'>
+											<div
+												className='stat-icon'
+												style={{
+													color: '#8b5cf6',
+													background: 'rgba(139,92,246,0.1)',
+												}}>
+												<Users size={24} />
+											</div>
+											<div className='stat-info'>
+												<span className='stat-label'>Contestants</span>
+												<span className='stat-value'>
+													{stats.contestantsCount}
+												</span>
+											</div>
 										</div>
 									</div>
 
-									{/* SVG Doughnut Chart: Votes Share by Category */}
-									<div className="chart-container-panel">
-										<div className="chart-header">
-											<div className="chart-header-title">Vote Distribution</div>
-										</div>
-										<div className="chart-svg-wrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'auto', minHeight: '240px' }}>
-											{(() => {
-												const donutResult = getDonutChartData();
-												if (donutResult.totalVotes === 0) {
+									{/* Custom interactive SVG charts section */}
+									<div className="chart-card-grid">
+										{/* SVG Line Chart: Revenue & Votes Trend */}
+										<div className="chart-container-panel">
+											<div className="chart-header">
+												<div className="chart-header-title">Voting & Revenue Trend</div>
+												<div className="chart-legend">
+													<div className="chart-legend-item">
+														<div className="chart-legend-dot" style={{ background: 'var(--accent-rose)' }}></div>
+														<span>Votes cast</span>
+													</div>
+												</div>
+											</div>
+											<div className="chart-svg-wrap">
+												{(() => {
+													const lineData = getLineChartData();
+													if (lineData.length === 0) {
+														return (
+															<div style={{ height: '100%', display: 'grid', placeItems: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+																No voting history to display trend yet.
+															</div>
+														);
+													}
+
+													const width = 500;
+													const height = 200;
+													const padLeft = 45;
+													const padRight = 15;
+													const padTop = 15;
+													const padBottom = 30;
+													const plotW = width - padLeft - padRight;
+													const plotH = height - padTop - padBottom;
+
+													const maxVotes = Math.max(...lineData.map(d => d.votes), 5);
+													const minVotes = 0;
+
+													// Generate points
+													const points = lineData.map((d, i) => {
+														const x = padLeft + (i * (plotW / (lineData.length - 1 || 1)));
+														const y = padTop + plotH - ((d.votes - minVotes) / (maxVotes - minVotes)) * plotH;
+														return { x, y, data: d, index: i };
+													});
+
+													const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+													const areaD = points.length > 0
+														? `${pathD} L ${points[points.length - 1].x} ${padTop + plotH} L ${points[0].x} ${padTop + plotH} Z`
+														: '';
+
 													return (
-														<div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
-															No votes recorded to build distribution map.
-														</div>
-													);
-												}
+														<>
+															<svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%" preserveAspectRatio="none">
+																<defs>
+																	<linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+																		<stop offset="0%" stopColor="var(--accent-rose)" />
+																		<stop offset="100%" stopColor="var(--accent-pink)" />
+																	</linearGradient>
+																	<linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+																		<stop offset="0%" stopColor="var(--accent-rose)" stopOpacity="0.25" />
+																		<stop offset="100%" stopColor="var(--accent-rose)" stopOpacity="0.0" />
+																	</linearGradient>
+																</defs>
 
-												const total = donutResult.totalVotes;
-												const slices = donutResult.data.filter(s => s.votes > 0);
-												if (slices.length === 0) {
-													return (
-														<div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
-															No votes recorded to build distribution map.
-														</div>
-													);
-												}
+																{/* Grid lines */}
+																<line x1={padLeft} y1={padTop} x2={width - padRight} y2={padTop} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+																<line x1={padLeft} y1={padTop + plotH / 2} x2={width - padRight} y2={padTop + plotH / 2} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+																<line x1={padLeft} y1={padTop + plotH} x2={width - padRight} y2={padTop + plotH} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
 
-												const CHART_COLORS = [
-													'#f43f5e', // Accent Rose
-													'#a855f7', // Accent Amethyst
-													'#3b82f6', // Accent Blue
-													'#10b981', // Accent Emerald
-													'#f59e0b', // Accent Amber
-													'#ec4899', // Pink
-												];
+																{/* Y Axis Labels */}
+																<text x={padLeft - 10} y={padTop + 4} fill="var(--text-muted)" fontSize="8" textAnchor="end">{maxVotes}</text>
+																<text x={padLeft - 10} y={padTop + plotH / 2 + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">{Math.round(maxVotes / 2)}</text>
+																<text x={padLeft - 10} y={padTop + plotH + 3} fill="var(--text-muted)" fontSize="8" textAnchor="end">0</text>
 
-												const r = 50;
-												const circ = 2 * Math.PI * r;
-												let accumPercent = 0;
+																{/* Area & Line */}
+																{points.length > 0 && (
+																	<>
+																		<path d={areaD} fill="url(#areaGrad)" />
+																		<path d={pathD} fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" className="chart-line-path" />
+																	</>
+																)}
 
-												return (
-													<div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%', flexWrap: 'wrap', justifyContent: 'center' }}>
-														<div style={{ position: 'relative', width: '130px', height: '130px' }}>
-															<svg viewBox="0 0 200 200" width="100%" height="100%">
-																{slices.map((slice, i) => {
-																	const percent = slice.votes / total;
-																	const strokeLength = percent * circ;
-																	const strokeOffset = circ - (accumPercent * circ);
-																	accumPercent += percent;
-																	const color = CHART_COLORS[i % CHART_COLORS.length];
-
-																	return (
+																{/* X Axis Labels & Dots */}
+																{points.map((p, i) => (
+																	<g key={i}>
+																		<text x={p.x} y={height - 8} fill="var(--text-muted)" fontSize="8" textAnchor="middle">{p.data.date}</text>
 																		<circle
-																			key={i}
-																			cx="100"
-																			cy="100"
-																			r={r}
-																			fill="transparent"
-																			stroke={color}
-																			strokeWidth="20"
-																			strokeDasharray={circ}
-																			strokeDashoffset={strokeOffset}
-																			transform="rotate(-90 100 100)"
-																			className="chart-donut-slice"
-																			opacity={hoveredDonutIndex === null || hoveredDonutIndex === i ? 1 : 0.4}
+																			cx={p.x}
+																			cy={p.y}
+																			r={hoveredChartIndex === i ? 6 : 3.5}
+																			fill={hoveredChartIndex === i ? '#ffffff' : 'var(--accent-rose)'}
+																			stroke={hoveredChartIndex === i ? 'var(--accent-amethyst)' : '#180920'}
+																			strokeWidth="1.5"
+																			className="chart-circle-node"
 																			onMouseEnter={(e) => {
-																				setHoveredDonutIndex(i);
+																				setHoveredChartIndex(i);
 																				const rect = e.target.getBoundingClientRect();
 																				const parentRect = e.target.parentElement.parentElement.getBoundingClientRect();
 																				setTooltipPos({
-																					x: rect.left - parentRect.left + 45,
-																					y: rect.top - parentRect.top - 50,
+																					x: rect.left - parentRect.left + 8,
+																					y: rect.top - parentRect.top - 60,
 																					show: true,
-																					label: slice.name,
-																					value: `${slice.votes.toLocaleString()} Votes (${Math.round(percent * 100)}%)`
+																					label: p.data.date,
+																					value: `${p.data.votes.toLocaleString()} Votes (₦${p.data.revenue.toLocaleString()})`
 																				});
 																			}}
 																			onMouseLeave={() => {
-																				setHoveredDonutIndex(null);
+																				setHoveredChartIndex(null);
 																				setTooltipPos(prev => ({ ...prev, show: false }));
 																			}}
 																		/>
-																	);
-																})}
-																{/* Center cut-out */}
-																<circle cx="100" cy="100" r="38" fill="var(--dash-panel)" />
-																{/* Center label */}
-																<text x="100" y="96" fill="var(--text-muted)" fontSize="11" textAnchor="middle" fontWeight="bold">TOTAL</text>
-																<text x="100" y="116" fill="#fff" fontSize="16" textAnchor="middle" fontWeight="950">{total.toLocaleString()}</text>
+																	</g>
+																))}
 															</svg>
-															{tooltipPos.show && hoveredDonutIndex !== null && (
+															{tooltipPos.show && hoveredChartIndex !== null && (
 																<div className="chart-tooltip-bubble" style={{ left: tooltipPos.x, top: tooltipPos.y }}>
 																	<strong style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tooltipPos.label}</strong>
 																	<span style={{ fontWeight: 700, color: '#fff' }}>{tooltipPos.value}</span>
 																</div>
 															)}
-														</div>
-
-														<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1, minWidth: '120px', fontSize: '0.85rem' }}>
-															{slices.map((slice, i) => (
-																<div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: hoveredDonutIndex === null || hoveredDonutIndex === i ? 1 : 0.5, transition: 'opacity 0.2s' }}>
-																	<div style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[i % CHART_COLORS.length], flexShrink: 0 }}></div>
-																	<span style={{ color: 'var(--text-white)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }} title={slice.name}>{slice.name}</span>
-																	<span style={{ color: 'var(--text-muted)', marginLeft: 'auto', fontWeight: 'bold' }}>{Math.round((slice.votes / total) * 100)}%</span>
-																</div>
-															))}
-														</div>
-													</div>
-												);
-											})()}
+														</>
+													);
+												})()}
+											</div>
 										</div>
-									</div>
-								</div>
 
-								<div className='responsive-double-grid'>
-								
-									<div
-										className='glass-panel'
-										style={{
-											padding: '24px',
-											background: 'rgba(13,9,38,0.2)',
-										}}>
-										<h3
-											style={{
-												fontSize: '1.2rem',
-												marginBottom: '15px',
-												display: 'flex',
-												alignItems: 'center',
-												gap: '10px',
-											}}>
-											<Crown
-												size={20}
-												color='#ec4899'
-												fill='#ec4899'
-											/>{' '}
-											Category Leaders
-										</h3>
-										<div
-											style={{
-												display: 'flex',
-												flexDirection: 'column',
-												gap: '15px',
-											}}>
-											{categories.length === 0 ? (
-												<p style={{ color: 'var(--text-muted)' }}>
-													No categories created yet.
-												</p>
-											) : (
-												categories.map((cat) => {
-													const leaders = getLeaderboardForCategory(cat.id);
-													const leader = leaders.length > 0 ? leaders[0] : null;
+										{/* SVG Doughnut Chart: Votes Share by Category */}
+										<div className="chart-container-panel">
+											<div className="chart-header">
+												<div className="chart-header-title">Vote Distribution</div>
+											</div>
+											<div className="chart-svg-wrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'auto', minHeight: '240px' }}>
+												{(() => {
+													const donutResult = getDonutChartData();
+													if (donutResult.totalVotes === 0) {
+														return (
+															<div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
+																No votes recorded to build distribution map.
+															</div>
+														);
+													}
+
+													const total = donutResult.totalVotes;
+													const slices = donutResult.data.filter(s => s.votes > 0);
+													if (slices.length === 0) {
+														return (
+															<div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
+																No votes recorded to build distribution map.
+															</div>
+														);
+													}
+
+													const CHART_COLORS = [
+														'#f43f5e', // Accent Rose
+														'#a855f7', // Accent Amethyst
+														'#3b82f6', // Accent Blue
+														'#10b981', // Accent Emerald
+														'#f59e0b', // Accent Amber
+														'#ec4899', // Pink
+													];
+
+													const r = 50;
+													const circ = 2 * Math.PI * r;
+													let accumPercent = 0;
 
 													return (
-														<div
-															key={cat.id}
-															style={{
-																display: 'flex',
-																justifyContent: 'space-between',
-																alignItems: 'center',
-																borderBottom: '1px solid var(--border-glass)',
-																paddingBottom: '10px',
-															}}>
-															<div>
-																<h4 style={{ fontSize: '0.95rem' }}>
-																	{cat.name}
-																</h4>
-																<span
-																	style={{
-																		fontSize: '0.8rem',
-																		color: 'var(--text-muted)',
-																	}}>
-																	{leader
-																		? `Leader: ${leader.name}`
-																		: 'No contestants'}
-																</span>
-															</div>
-															{leader ? (
-																<div style={{ textAlign: 'right' }}>
-																	<span
-																		style={{
-																			color: 'var(--accent-pink)',
-																			fontWeight: 700,
-																			fontSize: '0.9rem',
-																		}}>
-																		{leader.votes_count} votes
-																	</span>
-																	<div
-																		style={{
-																			fontSize: '0.75rem',
-																			color: 'var(--text-muted)',
-																		}}>
-																		₦
-																		{(
-																			leader.votes_count * 100
-																		).toLocaleString()}
+														<div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%', flexWrap: 'wrap', justifyContent: 'center' }}>
+															<div style={{ position: 'relative', width: '130px', height: '130px' }}>
+																<svg viewBox="0 0 200 200" width="100%" height="100%">
+																	{slices.map((slice, i) => {
+																		const percent = slice.votes / total;
+																		const strokeLength = percent * circ;
+																		const strokeOffset = circ - (accumPercent * circ);
+																		accumPercent += percent;
+																		const color = CHART_COLORS[i % CHART_COLORS.length];
+
+																		return (
+																			<circle
+																				key={i}
+																				cx="100"
+																				cy="100"
+																				r={r}
+																				fill="transparent"
+																				stroke={color}
+																				strokeWidth="20"
+																				strokeDasharray={circ}
+																				strokeDashoffset={strokeOffset}
+																				transform="rotate(-90 100 100)"
+																				className="chart-donut-slice"
+																				opacity={hoveredDonutIndex === null || hoveredDonutIndex === i ? 1 : 0.4}
+																				onMouseEnter={(e) => {
+																					setHoveredDonutIndex(i);
+																					const rect = e.target.getBoundingClientRect();
+																					const parentRect = e.target.parentElement.parentElement.getBoundingClientRect();
+																					setTooltipPos({
+																						x: rect.left - parentRect.left + 45,
+																						y: rect.top - parentRect.top - 50,
+																						show: true,
+																						label: slice.name,
+																						value: `${slice.votes.toLocaleString()} Votes (${Math.round(percent * 100)}%)`
+																					});
+																				}}
+																				onMouseLeave={() => {
+																					setHoveredDonutIndex(null);
+																					setTooltipPos(prev => ({ ...prev, show: false }));
+																				}}
+																			/>
+																		);
+																	})}
+																	{/* Center cut-out */}
+																	<circle cx="100" cy="100" r="38" fill="var(--dash-panel)" />
+																	{/* Center label */}
+																	<text x="100" y="96" fill="var(--text-muted)" fontSize="11" textAnchor="middle" fontWeight="bold">TOTAL</text>
+																	<text x="100" y="116" fill="#fff" fontSize="16" textAnchor="middle" fontWeight="950">{total.toLocaleString()}</text>
+																</svg>
+																{tooltipPos.show && hoveredDonutIndex !== null && (
+																	<div className="chart-tooltip-bubble" style={{ left: tooltipPos.x, top: tooltipPos.y }}>
+																		<strong style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tooltipPos.label}</strong>
+																		<span style={{ fontWeight: 700, color: '#fff' }}>{tooltipPos.value}</span>
 																	</div>
-																</div>
-															) : (
-																<span
-																	style={{
-																		fontSize: '0.8rem',
-																		color: 'var(--text-muted)',
-																	}}>
-																	—
-																</span>
-															)}
+																)}
+															</div>
+
+															<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1, minWidth: '120px', fontSize: '0.85rem' }}>
+																{slices.map((slice, i) => (
+																	<div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: hoveredDonutIndex === null || hoveredDonutIndex === i ? 1 : 0.5, transition: 'opacity 0.2s' }}>
+																		<div style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[i % CHART_COLORS.length], flexShrink: 0 }}></div>
+																		<span style={{ color: 'var(--text-white)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }} title={slice.name}>{slice.name}</span>
+																		<span style={{ color: 'var(--text-muted)', marginLeft: 'auto', fontWeight: 'bold' }}>{Math.round((slice.votes / total) * 100)}%</span>
+																	</div>
+																))}
+															</div>
 														</div>
 													);
-												})
-											)}
+												})()}
+											</div>
 										</div>
 									</div>
 
-									{/* Transaction feed summary */}
-									<div
-										className='glass-panel'
-										style={{
-											padding: '24px',
-											background: 'rgba(13,9,38,0.2)',
-										}}>
-										<h3 style={{ fontSize: '1.2rem', marginBottom: '15px' }}>
-											Recent Votes
-										</h3>
+									<div className='responsive-double-grid'>
+
 										<div
+											className='glass-panel'
 											style={{
-												display: 'flex',
-												flexDirection: 'column',
-												gap: '12px',
+												padding: '24px',
+												background: 'rgba(13,9,38,0.2)',
 											}}>
-											{transactions.slice(0, 4).map((tx) => (
-												<div
-													key={tx.id}
-													style={{
-														display: 'flex',
-														justify: 'space-between',
-														fontSize: '0.85rem',
-														borderBottom: '1px solid var(--border-glass)',
-														paddingBottom: '8px',
-													}}>
-													<div>
-														<strong>{tx.contestants?.name || 'Deleted'}</strong>
-														<div
-															style={{
-																color: 'var(--text-muted)',
-																fontSize: '0.75rem',
-															}}>
-															{tx.email}
+											<h3
+												style={{
+													fontSize: '1.2rem',
+													marginBottom: '15px',
+													display: 'flex',
+													alignItems: 'center',
+													gap: '10px',
+												}}>
+												<Crown
+													size={20}
+													color='#ec4899'
+													fill='#ec4899'
+												/>{' '}
+												Category Leaders
+											</h3>
+											<div
+												style={{
+													display: 'flex',
+													flexDirection: 'column',
+													gap: '15px',
+												}}>
+												{categories.length === 0 ? (
+													<p style={{ color: 'var(--text-muted)' }}>
+														No categories created yet.
+													</p>
+												) : (
+													categories.map((cat) => {
+														const leaders = getLeaderboardForCategory(cat.id);
+														const leader = leaders.length > 0 ? leaders[0] : null;
+
+														return (
+															<div
+																key={cat.id}
+																style={{
+																	display: 'flex',
+																	justifyContent: 'space-between',
+																	alignItems: 'center',
+																	borderBottom: '1px solid var(--border-glass)',
+																	paddingBottom: '10px',
+																}}>
+																<div>
+																	<h4 style={{ fontSize: '0.95rem' }}>
+																		{cat.name}
+																	</h4>
+																	<span
+																		style={{
+																			fontSize: '0.8rem',
+																			color: 'var(--text-muted)',
+																		}}>
+																		{leader
+																			? `Leader: ${leader.name}`
+																			: 'No contestants'}
+																	</span>
+																</div>
+																{leader ? (
+																	<div style={{ textAlign: 'right' }}>
+																		<span
+																			style={{
+																				color: 'var(--accent-pink)',
+																				fontWeight: 700,
+																				fontSize: '0.9rem',
+																			}}>
+																			{leader.votes_count} votes
+																		</span>
+																		<div
+																			style={{
+																				fontSize: '0.75rem',
+																				color: 'var(--text-muted)',
+																			}}>
+																			₦
+																			{(
+																				leader.votes_count * 100
+																			).toLocaleString()}
+																		</div>
+																	</div>
+																) : (
+																	<span
+																		style={{
+																			fontSize: '0.8rem',
+																			color: 'var(--text-muted)',
+																		}}>
+																		—
+																	</span>
+																)}
+															</div>
+														);
+													})
+												)}
+											</div>
+										</div>
+
+										{/* Transaction feed summary */}
+										<div
+											className='glass-panel'
+											style={{
+												padding: '24px',
+												background: 'rgba(13,9,38,0.2)',
+											}}>
+											<h3 style={{ fontSize: '1.2rem', marginBottom: '15px' }}>
+												Recent Votes
+											</h3>
+											<div
+												style={{
+													display: 'flex',
+													flexDirection: 'column',
+													gap: '12px',
+												}}>
+												{transactions.slice(0, 4).map((tx) => (
+													<div
+														key={tx.id}
+														style={{
+															display: 'flex',
+															justify: 'space-between',
+															fontSize: '0.85rem',
+															borderBottom: '1px solid var(--border-glass)',
+															paddingBottom: '8px',
+														}}>
+														<div>
+															<strong>{tx.contestants?.name || 'Deleted'}</strong>
+															<div
+																style={{
+																	color: 'var(--text-muted)',
+																	fontSize: '0.75rem',
+																}}>
+																{tx.email}
+															</div>
+														</div>
+														<div style={{ textAlign: 'right' }}>
+															<span
+																style={{
+																	color: 'var(--accent-purple)',
+																	fontWeight: 600,
+																}}>
+																+{tx.votes_count} Votes
+															</span>
+															<div
+																style={{
+																	color: 'var(--text-muted)',
+																	fontSize: '0.75rem',
+																}}>
+																₦{tx.amount.toLocaleString()}
+															</div>
 														</div>
 													</div>
-													<div style={{ textAlign: 'right' }}>
-														<span
-															style={{
-																color: 'var(--accent-purple)',
-																fontWeight: 600,
-															}}>
-															+{tx.votes_count} Votes
-														</span>
-														<div
-															style={{
-																color: 'var(--text-muted)',
-																fontSize: '0.75rem',
-															}}>
-															₦{tx.amount.toLocaleString()}
-														</div>
-													</div>
-												</div>
-											))}
-											{transactions.length === 0 && (
-												<p
-													style={{
-														color: 'var(--text-muted)',
-														fontSize: '0.85rem',
-													}}>
-													No votes cast yet.
-												</p>
-											)}
+												))}
+												{transactions.length === 0 && (
+													<p
+														style={{
+															color: 'var(--text-muted)',
+															fontSize: '0.85rem',
+														}}>
+														No votes cast yet.
+													</p>
+												)}
+											</div>
 										</div>
 									</div>
-								</div>
 								</div>
 							);
 						})()}
@@ -1313,142 +1313,142 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 							}
 							return (
 								<div className="page-fade-in">
-								<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
-									{editingCategory ? 'Edit Category' : 'Manage Categories'}
-								</h2>
+									<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
+										{editingCategory ? 'Edit Category' : 'Manage Categories'}
+									</h2>
 
-								<form
-									onSubmit={handleCategorySubmit}
-									className='glass-panel'
-									style={{
-										padding: '20px',
-										marginBottom: '30px',
-										background: 'rgba(13,9,38,0.3)',
-									}}>
-									<h3
+									<form
+										onSubmit={handleCategorySubmit}
+										className='glass-panel'
 										style={{
-											fontSize: '1.1rem',
-											marginBottom: '15px',
-											display: 'flex',
-											alignItems: 'center',
-											gap: '8px',
+											padding: '20px',
+											marginBottom: '30px',
+											background: 'rgba(13,9,38,0.3)',
 										}}>
-										<PlusCircle
-											size={18}
-											className='text-accent-purple'
-										/>
-										{editingCategory
-											? `Modify: ${editingCategory.name}`
-											: 'Add New Category'}
-									</h3>
-									<div className='responsive-form-grid'>
-										<div
-											className='form-group'
-											style={{ marginBottom: 0 }}>
-											<label>Category Title</label>
-											<input
-												type='text'
-												className='input-control'
-												placeholder='e.g. Best Artist'
-												value={categoryName}
-												onChange={(e) => setCategoryName(e.target.value)}
-												required
+										<h3
+											style={{
+												fontSize: '1.1rem',
+												marginBottom: '15px',
+												display: 'flex',
+												alignItems: 'center',
+												gap: '8px',
+											}}>
+											<PlusCircle
+												size={18}
+												className='text-accent-purple'
 											/>
+											{editingCategory
+												? `Modify: ${editingCategory.name}`
+												: 'Add New Category'}
+										</h3>
+										<div className='responsive-form-grid'>
+											<div
+												className='form-group'
+												style={{ marginBottom: 0 }}>
+												<label>Category Title</label>
+												<input
+													type='text'
+													className='input-control'
+													placeholder='e.g. Best Artist'
+													value={categoryName}
+													onChange={(e) => setCategoryName(e.target.value)}
+													required
+												/>
+											</div>
+											<div
+												className='form-group'
+												style={{ marginBottom: 0 }}>
+												<label>Brief Description</label>
+												<input
+													type='text'
+													className='input-control'
+													placeholder='Short tagline for voters'
+													value={categoryDesc}
+													onChange={(e) => setCategoryDesc(e.target.value)}
+												/>
+											</div>
 										</div>
 										<div
-											className='form-group'
-											style={{ marginBottom: 0 }}>
-											<label>Brief Description</label>
-											<input
-												type='text'
-												className='input-control'
-												placeholder='Short tagline for voters'
-												value={categoryDesc}
-												onChange={(e) => setCategoryDesc(e.target.value)}
-											/>
-										</div>
-									</div>
-									<div
-										style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-										<button
-											type='submit'
-											className='btn btn-primary'
-											disabled={submittingCategory}>
-											{editingCategory ? 'Save Changes' : 'Create Category'}
-										</button>
-										{editingCategory && (
+											style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
 											<button
-												type='button'
-												className='btn btn-secondary'
-												onClick={() => {
-													setEditingCategory(null);
-													setCategoryName('');
-													setCategoryDesc('');
-												}}>
-												Cancel
+												type='submit'
+												className='btn btn-primary'
+												disabled={submittingCategory}>
+												{editingCategory ? 'Save Changes' : 'Create Category'}
 											</button>
-										)}
-									</div>
-								</form>
+											{editingCategory && (
+												<button
+													type='button'
+													className='btn btn-secondary'
+													onClick={() => {
+														setEditingCategory(null);
+														setCategoryName('');
+														setCategoryDesc('');
+													}}>
+													Cancel
+												</button>
+											)}
+										</div>
+									</form>
 
-								<h3 style={{ fontSize: '1.3rem', marginBottom: '15px' }}>
-									All Categories
-								</h3>
-								{categories.length === 0 ? (
-									<p style={{ color: 'var(--text-muted)' }}>
-										No categories configured yet.
-									</p>
-								) : (
-									<div className='table-container'>
-										<table className='data-table'>
-											<thead>
-												<tr>
-													<th>Name</th>
-													<th>Description</th>
-													<th>Created At</th>
-													<th style={{ textAlign: 'right' }}>Actions</th>
-												</tr>
-											</thead>
-											<tbody>
-												{categories.map((cat) => (
-													<tr key={cat.id}>
-														<td>
-															<strong>{cat.name}</strong>
-														</td>
-														<td style={{ color: 'var(--text-muted)' }}>
-															{cat.description || 'N/A'}
-														</td>
-														<td>
-															{new Date(cat.created_at).toLocaleDateString()}
-														</td>
-														<td style={{ textAlign: 'right' }}>
-															<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-																<button
-																	className='btn btn-secondary'
-																	style={{
-																		padding: '6px 12px',
-																		fontSize: '0.8rem',
-																	}}
-																	onClick={() => handleStartEditCategory(cat)}>
-																	<Edit3 size={13} /> Edit
-																</button>
-																<button
-																	className='btn btn-danger'
-																	style={{
-																		padding: '6px 12px',
-																		fontSize: '0.8rem',
-																	}}
-																	onClick={() => handleDeleteCategory(cat.id)}>
-																	<Trash2 size={13} /> Delete
-																</button>
-															</div>
-														</td>
+									<h3 style={{ fontSize: '1.3rem', marginBottom: '15px' }}>
+										All Categories
+									</h3>
+									{categories.length === 0 ? (
+										<p style={{ color: 'var(--text-muted)' }}>
+											No categories configured yet.
+										</p>
+									) : (
+										<div className='table-container'>
+											<table className='data-table'>
+												<thead>
+													<tr>
+														<th>Name</th>
+														<th>Description</th>
+														<th>Created At</th>
+														<th style={{ textAlign: 'right' }}>Actions</th>
 													</tr>
-												))}
-											</tbody>
-										</table>
-									</div>
-								)}
+												</thead>
+												<tbody>
+													{categories.map((cat) => (
+														<tr key={cat.id}>
+															<td>
+																<strong>{cat.name}</strong>
+															</td>
+															<td style={{ color: 'var(--text-muted)' }}>
+																{cat.description || 'N/A'}
+															</td>
+															<td>
+																{new Date(cat.created_at).toLocaleDateString()}
+															</td>
+															<td style={{ textAlign: 'right' }}>
+																<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+																	<button
+																		className='btn btn-secondary'
+																		style={{
+																			padding: '6px 12px',
+																			fontSize: '0.8rem',
+																		}}
+																		onClick={() => handleStartEditCategory(cat)}>
+																		<Edit3 size={13} /> Edit
+																	</button>
+																	<button
+																		className='btn btn-danger'
+																		style={{
+																			padding: '6px 12px',
+																			fontSize: '0.8rem',
+																		}}
+																		onClick={() => handleDeleteCategory(cat.id)}>
+																		<Trash2 size={13} /> Delete
+																	</button>
+																</div>
+															</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
+										</div>
+									)}
 								</div>
 							);
 						})()}
@@ -1467,305 +1467,305 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 							}
 							return (
 								<div className="page-fade-in">
-								<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
-									{editingContestant
-										? `Edit Contestant: ${editingContestant.name}`
-										: 'Contestant Management'}
-								</h2>
-
-								<form
-									onSubmit={handleContestantSubmit}
-									className='glass-panel'
-									style={{
-										padding: '20px',
-										marginBottom: '30px',
-										background: 'rgba(13,9,38,0.3)',
-									}}>
-									<h3
-										style={{
-											fontSize: '1.1rem',
-											marginBottom: '15px',
-											display: 'flex',
-											alignItems: 'center',
-											gap: '8px',
-										}}>
-										<PlusCircle
-											size={18}
-											className='text-accent-purple'
-										/>
+									<h2 style={{ fontSize: '1.8rem', marginBottom: '25px' }}>
 										{editingContestant
-											? 'Modify Details'
-											: 'Upload New Contestant'}
-									</h3>
+											? `Edit Contestant: ${editingContestant.name}`
+											: 'Contestant Management'}
+									</h2>
 
-									<div className='responsive-form-grid'>
-										<div className='form-group'>
-											<label>Contestant Full Name</label>
-											<input
-												type='text'
-												className='input-control'
-												placeholder='e.g. Burna Boy'
-												value={contestantName}
-												onChange={(e) => setContestantName(e.target.value)}
-												required
+									<form
+										onSubmit={handleContestantSubmit}
+										className='glass-panel'
+										style={{
+											padding: '20px',
+											marginBottom: '30px',
+											background: 'rgba(13,9,38,0.3)',
+										}}>
+										<h3
+											style={{
+												fontSize: '1.1rem',
+												marginBottom: '15px',
+												display: 'flex',
+												alignItems: 'center',
+												gap: '8px',
+											}}>
+											<PlusCircle
+												size={18}
+												className='text-accent-purple'
 											/>
-										</div>
+											{editingContestant
+												? 'Modify Details'
+												: 'Upload New Contestant'}
+										</h3>
 
-										<div className='form-group'>
-											<label>Category Group</label>
-											<select
-												className='input-control'
-												value={contestantCategoryId}
-												onChange={(e) =>
-													setContestantCategoryId(e.target.value)
-												}
-												required>
-												<option value=''>-- Choose Category --</option>
-												{categories.map((cat) => (
-													<option
-														key={cat.id}
-														value={cat.id}>
-														{cat.name}
-													</option>
-												))}
-											</select>
-										</div>
-									</div>
-
-									<div className='form-group'>
-										<label>Short Bio / Tagline</label>
-										<textarea
-											className='input-control'
-											rows='2'
-											placeholder='Brief details or campaign promise...'
-											value={contestantBio}
-											onChange={(e) =>
-												setContestantBio(e.target.value)
-											}></textarea>
-									</div>
-
-									<div className='responsive-form-grid mt-15'>
-										<div className='form-group'>
-											<label>Option A: Image URL Link</label>
-											<div style={{ position: 'relative' }}>
-												<ImageIcon
-													style={{
-														position: 'absolute',
-														left: '12px',
-														top: '50%',
-														transform: 'translateY(-50%)',
-														color: 'var(--text-muted)',
-													}}
-													size={16}
-												/>
+										<div className='responsive-form-grid'>
+											<div className='form-group'>
+												<label>Contestant Full Name</label>
 												<input
-													type='url'
+													type='text'
 													className='input-control'
-													placeholder='https://example.com/avatar.jpg'
-													value={contestantImageUrl}
-													style={{ paddingLeft: '40px' }}
+													placeholder='e.g. Burna Boy'
+													value={contestantName}
+													onChange={(e) => setContestantName(e.target.value)}
+													required
+												/>
+											</div>
+
+											<div className='form-group'>
+												<label>Category Group</label>
+												<select
+													className='input-control'
+													value={contestantCategoryId}
 													onChange={(e) =>
-														setContestantImageUrl(e.target.value)
+														setContestantCategoryId(e.target.value)
 													}
-													disabled={!!contestantImageFile}
-												/>
+													required>
+													<option value=''>-- Choose Category --</option>
+													{categories.map((cat) => (
+														<option
+															key={cat.id}
+															value={cat.id}>
+															{cat.name}
+														</option>
+													))}
+												</select>
 											</div>
 										</div>
 
 										<div className='form-group'>
-											<label>Option B: Upload Photo File</label>
-											<input
-												type='file'
-												accept='image/*'
+											<label>Short Bio / Tagline</label>
+											<textarea
 												className='input-control'
-												style={{ padding: '10px 15px' }}
+												rows='2'
+												placeholder='Brief details or campaign promise...'
+												value={contestantBio}
 												onChange={(e) =>
-													setContestantImageFile(e.target.files[0])
-												}
-												disabled={!!contestantImageUrl}
-											/>
+													setContestantBio(e.target.value)
+												}></textarea>
 										</div>
-									</div>
 
-									<div
-										style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-										<button
-											type='submit'
-											className='btn btn-primary'
-											disabled={submittingContestant}>
-											{submittingContestant
-												? 'Saving details...'
-												: editingContestant
-													? 'Save Changes'
-													: 'Upload Contestant'}
-										</button>
-										{editingContestant && (
-											<button
-												type='button'
-												className='btn btn-secondary'
-												onClick={() => {
-													setEditingContestant(null);
-													setContestantName('');
-													setContestantBio('');
-													setContestantImageUrl('');
-													setContestantImageFile(null);
-													setContestantCategoryId('');
-												}}>
-												Cancel Edit
-											</button>
-										)}
-									</div>
-								</form>
+										<div className='responsive-form-grid mt-15'>
+											<div className='form-group'>
+												<label>Option A: Image URL Link</label>
+												<div style={{ position: 'relative' }}>
+													<ImageIcon
+														style={{
+															position: 'absolute',
+															left: '12px',
+															top: '50%',
+															transform: 'translateY(-50%)',
+															color: 'var(--text-muted)',
+														}}
+														size={16}
+													/>
+													<input
+														type='url'
+														className='input-control'
+														placeholder='https://example.com/avatar.jpg'
+														value={contestantImageUrl}
+														style={{ paddingLeft: '40px' }}
+														onChange={(e) =>
+															setContestantImageUrl(e.target.value)
+														}
+														disabled={!!contestantImageFile}
+													/>
+												</div>
+											</div>
 
-								<h3 style={{ fontSize: '1.3rem', marginBottom: '15px' }}>
-									All Contestants
-								</h3>
-								{contestants.length === 0 ? (
-									<p style={{ color: 'var(--text-muted)' }}>
-										No contestants found. Add categories first, then add
-										contestants.
-									</p>
-								) : (
-									<>
-										<div className='admin-toolbar'>
-											<div className='admin-search'>
-												<Search size={16} />
+											<div className='form-group'>
+												<label>Option B: Upload Photo File</label>
 												<input
+													type='file'
+													accept='image/*'
 													className='input-control'
-													placeholder='Search contestants...'
-													value={contestantSearch}
-													onChange={(e) => setContestantSearch(e.target.value)}
+													style={{ padding: '10px 15px' }}
+													onChange={(e) =>
+														setContestantImageFile(e.target.files[0])
+													}
+													disabled={!!contestantImageUrl}
 												/>
 											</div>
-											<select
-												className='input-control'
-												style={{ maxWidth: '320px' }}
-												value={contestantCategoryFilter}
-												onChange={(e) =>
-													setContestantCategoryFilter(e.target.value)
-												}>
-												<option value='all'>All categories</option>
-												{categories.map((cat) => (
-													<option
-														key={cat.id}
-														value={cat.id}>
-														{cat.name}
-													</option>
-												))}
-											</select>
 										</div>
 
-										<div className='table-container'>
-											<table className='data-table'>
-												<thead>
-													<tr>
-														<th>Photo</th>
-														<th>Name</th>
-														<th>Category</th>
-														<th>Votes Cast</th>
-														<th>Revenue (₦)</th>
-														<th style={{ textAlign: 'right' }}>Actions</th>
-													</tr>
-												</thead>
-												<tbody>
-													{contestants
-														.filter((con) => {
-															const q = contestantSearch.trim().toLowerCase();
-															const matchesQuery =
-																!q ||
-																con.name?.toLowerCase().includes(q) ||
-																con.bio?.toLowerCase().includes(q) ||
-																con.categories?.name?.toLowerCase().includes(q);
+										<div
+											style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+											<button
+												type='submit'
+												className='btn btn-primary'
+												disabled={submittingContestant}>
+												{submittingContestant
+													? 'Saving details...'
+													: editingContestant
+														? 'Save Changes'
+														: 'Upload Contestant'}
+											</button>
+											{editingContestant && (
+												<button
+													type='button'
+													className='btn btn-secondary'
+													onClick={() => {
+														setEditingContestant(null);
+														setContestantName('');
+														setContestantBio('');
+														setContestantImageUrl('');
+														setContestantImageFile(null);
+														setContestantCategoryId('');
+													}}>
+													Cancel Edit
+												</button>
+											)}
+										</div>
+									</form>
 
-															const matchesCategory =
-																contestantCategoryFilter === 'all' ||
-																String(con.category_id) ===
+									<h3 style={{ fontSize: '1.3rem', marginBottom: '15px' }}>
+										All Contestants
+									</h3>
+									{contestants.length === 0 ? (
+										<p style={{ color: 'var(--text-muted)' }}>
+											No contestants found. Add categories first, then add
+											contestants.
+										</p>
+									) : (
+										<>
+											<div className='admin-toolbar'>
+												<div className='admin-search'>
+													<Search size={16} />
+													<input
+														className='input-control'
+														placeholder='Search contestants...'
+														value={contestantSearch}
+														onChange={(e) => setContestantSearch(e.target.value)}
+													/>
+												</div>
+												<select
+													className='input-control'
+													style={{ maxWidth: '320px' }}
+													value={contestantCategoryFilter}
+													onChange={(e) =>
+														setContestantCategoryFilter(e.target.value)
+													}>
+													<option value='all'>All categories</option>
+													{categories.map((cat) => (
+														<option
+															key={cat.id}
+															value={cat.id}>
+															{cat.name}
+														</option>
+													))}
+												</select>
+											</div>
+
+											<div className='table-container'>
+												<table className='data-table'>
+													<thead>
+														<tr>
+															<th>Photo</th>
+															<th>Name</th>
+															<th>Category</th>
+															<th>Votes Cast</th>
+															<th>Revenue (₦)</th>
+															<th style={{ textAlign: 'right' }}>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														{contestants
+															.filter((con) => {
+																const q = contestantSearch.trim().toLowerCase();
+																const matchesQuery =
+																	!q ||
+																	con.name?.toLowerCase().includes(q) ||
+																	con.bio?.toLowerCase().includes(q) ||
+																	con.categories?.name?.toLowerCase().includes(q);
+
+																const matchesCategory =
+																	contestantCategoryFilter === 'all' ||
+																	String(con.category_id) ===
 																	String(contestantCategoryFilter);
 
-															return matchesQuery && matchesCategory;
-														})
-														.map((con) => (
-															<tr key={con.id}>
-																<td>
-																	<div
-																		style={{
-																			width: '40px',
-																			height: '40px',
-																			borderRadius: '8px',
-																			overflow: 'hidden',
-																			background: 'rgba(0,0,0,0.3)',
-																		}}>
-																		<img
-																			src={CONTESTANT_LOGO}
-																			alt=''
+																return matchesQuery && matchesCategory;
+															})
+															.map((con) => (
+																<tr key={con.id}>
+																	<td>
+																		<div
 																			style={{
-																				width: '100%',
-																				height: '100%',
-																				objectFit: 'cover',
-																			}}
-																		/>
-																	</div>
-																</td>
-																<td>
-																	<strong>{con.name}</strong>
-																</td>
-																<td>
-																	<span
-																		style={{
-																			background: 'rgba(139,92,246,0.1)',
-																			color: 'var(--accent-purple)',
-																			padding: '4px 8px',
-																			borderRadius: '6px',
-																			fontSize: '0.8rem',
-																			fontWeight: 500,
-																		}}>
-																		{con.categories?.name || 'Unassigned'}
-																	</span>
-																</td>
-																<td>
-																	<strong
-																		style={{ color: 'var(--accent-pink)' }}>
-																		{con.votes_count.toLocaleString()}
-																	</strong>
-																</td>
-																<td>
-																	<strong>
-																		₦{(con.votes_count * 100).toLocaleString()}
-																	</strong>
-																</td>
-																<td style={{ textAlign: 'right' }}>
-																	<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-																		<button
-																			className='btn btn-secondary'
+																				width: '40px',
+																				height: '40px',
+																				borderRadius: '8px',
+																				overflow: 'hidden',
+																				background: 'rgba(0,0,0,0.3)',
+																			}}>
+																			<img
+																				src={CONTESTANT_LOGO}
+																				alt=''
+																				style={{
+																					width: '100%',
+																					height: '100%',
+																					objectFit: 'cover',
+																				}}
+																			/>
+																		</div>
+																	</td>
+																	<td>
+																		<strong>{con.name}</strong>
+																	</td>
+																	<td>
+																		<span
 																			style={{
-																				padding: '6px 12px',
+																				background: 'rgba(139,92,246,0.1)',
+																				color: 'var(--accent-purple)',
+																				padding: '4px 8px',
+																				borderRadius: '6px',
 																				fontSize: '0.8rem',
-																			}}
-																			onClick={() =>
-																				handleStartEditContestant(con)
-																			}>
-																			<Edit3 size={13} /> Edit
-																		</button>
-																		<button
-																			className='btn btn-danger'
-																			style={{
-																				padding: '6px 12px',
-																				fontSize: '0.8rem',
-																			}}
-																			onClick={() =>
-																				handleDeleteContestant(con.id)
-																			}>
-																			<Trash2 size={13} /> Delete
-																		</button>
-																	</div>
-																</td>
-															</tr>
-														))}
-												</tbody>
-											</table>
-										</div>
-									</>
-								)}
+																				fontWeight: 500,
+																			}}>
+																			{con.categories?.name || 'Unassigned'}
+																		</span>
+																	</td>
+																	<td>
+																		<strong
+																			style={{ color: 'var(--accent-pink)' }}>
+																			{con.votes_count.toLocaleString()}
+																		</strong>
+																	</td>
+																	<td>
+																		<strong>
+																			₦{(con.votes_count * 100).toLocaleString()}
+																		</strong>
+																	</td>
+																	<td style={{ textAlign: 'right' }}>
+																		<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+																			<button
+																				className='btn btn-secondary'
+																				style={{
+																					padding: '6px 12px',
+																					fontSize: '0.8rem',
+																				}}
+																				onClick={() =>
+																					handleStartEditContestant(con)
+																				}>
+																				<Edit3 size={13} /> Edit
+																			</button>
+																			<button
+																				className='btn btn-danger'
+																				style={{
+																					padding: '6px 12px',
+																					fontSize: '0.8rem',
+																				}}
+																				onClick={() =>
+																					handleDeleteContestant(con.id)
+																				}>
+																				<Trash2 size={13} /> Delete
+																			</button>
+																		</div>
+																	</td>
+																</tr>
+															))}
+													</tbody>
+												</table>
+											</div>
+										</>
+									)}
 								</div>
 							);
 						})()}
@@ -1784,219 +1784,219 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 							}
 							return (
 								<div className="page-fade-in">
-								<h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
-									Category Leaderboards
-								</h2>
-								<p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>
-									Auditing live rankings per category. Ratio: ₦100 = 1 Vote
-									(₦1,000 = 10 Votes).
-								</p>
-
-								{categories.length === 0 ? (
-									<p style={{ color: 'var(--text-muted)' }}>
-										Please configure categories first to view standings.
+									<h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
+										Category Leaderboards
+									</h2>
+									<p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>
+										Auditing live rankings per category. Ratio: ₦100 = 1 Vote
+										(₦1,000 = 10 Votes).
 									</p>
-								) : (
-									<div
-										style={{
-											display: 'flex',
-											flexDirection: 'column',
-											gap: '40px',
-										}}>
-										{categories.map((cat) => {
-											const standings = getLeaderboardForCategory(cat.id);
-											const maxVotesInCategory = standings[0] ? standings[0].votes_count : 0;
 
-											return (
-												<div
-													key={cat.id}
-													className='glass-panel page-fade-in'
-													style={{
-														padding: '24px',
-														background: 'rgba(13,9,38,0.2)',
-													}}>
-													<div className='leaderboard-header'>
-														<div>
-															<h3
+									{categories.length === 0 ? (
+										<p style={{ color: 'var(--text-muted)' }}>
+											Please configure categories first to view standings.
+										</p>
+									) : (
+										<div
+											style={{
+												display: 'flex',
+												flexDirection: 'column',
+												gap: '40px',
+											}}>
+											{categories.map((cat) => {
+												const standings = getLeaderboardForCategory(cat.id);
+												const maxVotesInCategory = standings[0] ? standings[0].votes_count : 0;
+
+												return (
+													<div
+														key={cat.id}
+														className='glass-panel page-fade-in'
+														style={{
+															padding: '24px',
+															background: 'rgba(13,9,38,0.2)',
+														}}>
+														<div className='leaderboard-header'>
+															<div>
+																<h3
+																	style={{
+																		fontSize: '1.3rem',
+																		color: 'var(--text-white)',
+																	}}>
+																	{cat.name}
+																</h3>
+																<p
+																	style={{
+																		fontSize: '0.85rem',
+																		color: 'var(--text-muted)',
+																	}}>
+																	{cat.description || 'No category description'}
+																</p>
+															</div>
+															<span
 																style={{
-																	fontSize: '1.3rem',
-																	color: 'var(--text-white)',
+																	fontSize: '0.8rem',
+																	background: 'rgba(59,130,246,0.1)',
+																	color: 'var(--accent-blue)',
+																	padding: '5px 12px',
+																	borderRadius: '50px',
+																	fontWeight: 600,
 																}}>
-																{cat.name}
-															</h3>
+																{standings.length}{' '}
+																{standings.length === 1
+																	? 'Contestant'
+																	: 'Contestants'}
+															</span>
+														</div>
+
+														{standings.length === 0 ? (
 															<p
 																style={{
-																	fontSize: '0.85rem',
 																	color: 'var(--text-muted)',
+																	fontSize: '0.9rem',
+																	fontStyle: 'italic',
 																}}>
-																{cat.description || 'No category description'}
+																No contestants added to this category yet.
 															</p>
-														</div>
-														<span
-															style={{
-																fontSize: '0.8rem',
-																background: 'rgba(59,130,246,0.1)',
-																color: 'var(--accent-blue)',
-																padding: '5px 12px',
-																borderRadius: '50px',
-																fontWeight: 600,
-															}}>
-															{standings.length}{' '}
-															{standings.length === 1
-																? 'Contestant'
-																: 'Contestants'}
-														</span>
-													</div>
+														) : (
+															<div
+																style={{
+																	display: 'flex',
+																	flexDirection: 'column',
+																	gap: '12px',
+																}}>
+																{standings.map((con, index) => {
+																	const isLeader =
+																		index === 0 && con.votes_count > 0;
+																	const pct = maxVotesInCategory > 0 ? (con.votes_count / maxVotesInCategory) * 100 : 0;
 
-													{standings.length === 0 ? (
-														<p
-															style={{
-																color: 'var(--text-muted)',
-																fontSize: '0.9rem',
-																fontStyle: 'italic',
-															}}>
-															No contestants added to this category yet.
-														</p>
-													) : (
-														<div
-															style={{
-																display: 'flex',
-																flexDirection: 'column',
-																gap: '12px',
-															}}>
-															{standings.map((con, index) => {
-																const isLeader =
-																	index === 0 && con.votes_count > 0;
-																const pct = maxVotesInCategory > 0 ? (con.votes_count / maxVotesInCategory) * 100 : 0;
-
-																return (
-																	<div
-																		key={con.id}
-																		className={`leaderboard-item ${isLeader ? 'is-leader' : ''}`}>
-																		<div className='leaderboard-item-details' style={{ flexGrow: 1, minWidth: 0 }}>
-																			<span
-																				style={{
-																					fontStyle: 'italic',
-																					fontWeight: 700,
-																					width: '20px',
-																					color:
-																						index === 0
-																							? 'var(--accent-pink)'
-																							: 'var(--text-muted)',
-																				}}>
-																				#{index + 1}
-																			</span>
-																			<div
-																				style={{
-																					width: '38px',
-																					height: '38px',
-																					borderRadius: '50%',
-																					overflow: 'hidden',
-																					background: 'var(--bg-deep)',
-																					flexShrink: 0,
-																					border: '1.5px solid rgba(255, 255, 255, 0.08)'
-																				}}>
-																				<img
-																					src={con.image_url || CONTESTANT_LOGO}
-																					alt={con.name}
-																					style={{
-																						width: '100%',
-																						height: '100%',
-																						objectFit: 'cover',
-																					}}
-																				/>
-																			</div>
-																			<div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
-																				<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-																					<strong style={{ fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>
-																						{con.name}
-																					</strong>
-																					{isLeader && (
-																						<span
-																							className='leader-badge'
-																							style={{
-																								display: 'inline-flex',
-																								alignItems: 'center',
-																								gap: '4px',
-																								fontSize: '0.7rem',
-																								color: 'var(--accent-pink)',
-																								background:
-																									'rgba(236,72,153,0.12)',
-																								padding: '2px 8px',
-																								borderRadius: '50px',
-																								fontWeight: 700,
-																							}}>
-																							<Crown
-																								size={10}
-																								fill='var(--accent-pink)'
-																							/>{' '}
-																							Leader
-																						</span>
-																					)}
-																				</div>
-																				{maxVotesInCategory > 0 && (
-																					<div className="vote-progress-container" style={{ width: '240px', maxWidth: '100%' }}>
-																						<div className="vote-progress-bg">
-																							<div className="vote-progress-fill" style={{ '--target-width': `${pct}%`, width: `${pct}%` }}></div>
-																						</div>
-																						<div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-																							{isLeader ? 'Leading standings' : `${(maxVotesInCategory - con.votes_count).toLocaleString()} votes behind leader`}
-																						</div>
-																					</div>
-																				)}
-																			</div>
-																		</div>
-
-																		<div className='leaderboard-item-stats' style={{ flexShrink: 0 }}>
-																			<div style={{ textAlign: 'right' }}>
+																	return (
+																		<div
+																			key={con.id}
+																			className={`leaderboard-item ${isLeader ? 'is-leader' : ''}`}>
+																			<div className='leaderboard-item-details' style={{ flexGrow: 1, minWidth: 0 }}>
 																				<span
 																					style={{
+																						fontStyle: 'italic',
 																						fontWeight: 700,
+																						width: '20px',
 																						color:
 																							index === 0
 																								? 'var(--accent-pink)'
-																								: 'var(--text-white)',
+																								: 'var(--text-muted)',
 																					}}>
-																					{con.votes_count.toLocaleString()}
+																					#{index + 1}
 																				</span>
-																				<span
+																				<div
 																					style={{
-																						fontSize: '0.8rem',
-																						color: 'var(--text-muted)',
+																						width: '38px',
+																						height: '38px',
+																						borderRadius: '50%',
+																						overflow: 'hidden',
+																						background: 'var(--bg-deep)',
+																						flexShrink: 0,
+																						border: '1.5px solid rgba(255, 255, 255, 0.08)'
 																					}}>
-																					{' '}
-																					{con.votes_count === 1
-																						? 'vote'
-																						: 'votes'}
-																				</span>
+																					<img
+																						src={con.image_url || CONTESTANT_LOGO}
+																						alt={con.name}
+																						style={{
+																							width: '100%',
+																							height: '100%',
+																							objectFit: 'cover',
+																						}}
+																					/>
+																				</div>
+																				<div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
+																					<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+																						<strong style={{ fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>
+																							{con.name}
+																						</strong>
+																						{isLeader && (
+																							<span
+																								className='leader-badge'
+																								style={{
+																									display: 'inline-flex',
+																									alignItems: 'center',
+																									gap: '4px',
+																									fontSize: '0.7rem',
+																									color: 'var(--accent-pink)',
+																									background:
+																										'rgba(236,72,153,0.12)',
+																									padding: '2px 8px',
+																									borderRadius: '50px',
+																									fontWeight: 700,
+																								}}>
+																								<Crown
+																									size={10}
+																									fill='var(--accent-pink)'
+																								/>{' '}
+																								Leader
+																							</span>
+																						)}
+																					</div>
+																					{maxVotesInCategory > 0 && (
+																						<div className="vote-progress-container" style={{ width: '240px', maxWidth: '100%' }}>
+																							<div className="vote-progress-bg">
+																								<div className="vote-progress-fill" style={{ '--target-width': `${pct}%`, width: `${pct}%` }}></div>
+																							</div>
+																							<div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+																								{isLeader ? 'Leading standings' : `${(maxVotesInCategory - con.votes_count).toLocaleString()} votes behind leader`}
+																							</div>
+																						</div>
+																					)}
+																				</div>
 																			</div>
-																			<div
-																				style={{
-																					minWidth: '80px',
-																					textAlign: 'right',
-																				}}>
-																				<span
+
+																			<div className='leaderboard-item-stats' style={{ flexShrink: 0 }}>
+																				<div style={{ textAlign: 'right' }}>
+																					<span
+																						style={{
+																							fontWeight: 700,
+																							color:
+																								index === 0
+																									? 'var(--accent-pink)'
+																									: 'var(--text-white)',
+																						}}>
+																						{con.votes_count.toLocaleString()}
+																					</span>
+																					<span
+																						style={{
+																							fontSize: '0.8rem',
+																							color: 'var(--text-muted)',
+																						}}>
+																						{' '}
+																						{con.votes_count === 1
+																							? 'vote'
+																							: 'votes'}
+																					</span>
+																				</div>
+																				<div
 																					style={{
-																						color: 'var(--text-muted)',
-																						fontSize: '0.85rem',
+																						minWidth: '80px',
+																						textAlign: 'right',
 																					}}>
-																					₦
-																					{(
-																						con.votes_count * 100
-																					).toLocaleString()}
-																				</span>
+																					<span
+																						style={{
+																							color: 'var(--text-muted)',
+																							fontSize: '0.85rem',
+																						}}>
+																						₦
+																						{(
+																							con.votes_count * 100
+																						).toLocaleString()}
+																					</span>
+																				</div>
 																			</div>
 																		</div>
-																	</div>
-																);
-															})}
-														</div>
-													)}
-												</div>
-											);
-										})}
-									</div>
-								)}
+																	);
+																})}
+															</div>
+														)}
+													</div>
+												);
+											})}
+										</div>
+									)}
 								</div>
 							);
 						})()}
@@ -2009,7 +2009,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 									(tx.email && tx.email.toLowerCase().includes(txSearchQuery.toLowerCase())) ||
 									(tx.contestants?.name && tx.contestants.name.toLowerCase().includes(txSearchQuery.toLowerCase()));
 
-								const matchesCategory = txCategoryFilter === 'all' || 
+								const matchesCategory = txCategoryFilter === 'all' ||
 									(tx.contestants?.category_id === txCategoryFilter);
 
 								let matchesDate = true;
@@ -2093,7 +2093,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 										</div>
 									</div>
 
-									{/* Quick stats on filtered items */}
+				
 									{transactions.length > 0 && (
 										<div style={{ display: 'flex', gap: '15px', marginBottom: '18px', fontSize: '0.85rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
 											<span>Showing <strong>{filtered.length}</strong> of {transactions.length} transactions</span>
