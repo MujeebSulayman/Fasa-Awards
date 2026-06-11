@@ -1131,7 +1131,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 								</div>
 
 								<div className='responsive-double-grid'>
-									{/* Category Leaders summary */}
+								
 									<div
 										className='glass-panel'
 										style={{
