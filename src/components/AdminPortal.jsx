@@ -2039,7 +2039,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 										Review the latest verified votes.
 									</p>
 
-									{/* Advanced filters toolbar */}
+								
 									<div className="filter-toolbar">
 										<div className="filter-item" style={{ flex: '2' }}>
 											<label>Search Transactions</label>
@@ -2093,7 +2093,7 @@ export default function AdminPortal({ onNavigateToVoter, navigate }) {
 										</div>
 									</div>
 
-				
+
 									{transactions.length > 0 && (
 										<div style={{ display: 'flex', gap: '15px', marginBottom: '18px', fontSize: '0.85rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
 											<span>Showing <strong>{filtered.length}</strong> of {transactions.length} transactions</span>
