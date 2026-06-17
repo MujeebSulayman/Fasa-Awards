@@ -7,11 +7,11 @@ export default function LeaderboardTab({
 	categories,
 	dataLoading,
 	ShimmerLoader,
-	getLeaderboardForCategory
+	getLeaderboardForCategory,
 }) {
 	if (dataLoading && categories.length === 0) {
 		return (
-			<div className="page-fade-in">
+			<div className='page-fade-in'>
 				<h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
 					Category Leaderboards
 				</h2>
@@ -21,13 +21,13 @@ export default function LeaderboardTab({
 	}
 
 	return (
-		<div className="page-fade-in">
+		<div className='page-fade-in'>
 			<h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
 				Category Leaderboards
 			</h2>
 			<p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>
-				Auditing live rankings per category. Ratio: ₦100 = 1 Vote
-				(₦1,000 = 10 Votes).
+				Auditing live rankings per category. Ratio: ₦100 = 1 Vote (₦1,000 = 10
+				Votes).
 			</p>
 
 			{categories.length === 0 ? (
@@ -43,7 +43,9 @@ export default function LeaderboardTab({
 					}}>
 					{categories.map((cat) => {
 						const standings = getLeaderboardForCategory(cat.id);
-						const maxVotesInCategory = standings[0] ? standings[0].votes_count : 0;
+						const maxVotesInCategory = standings[0]
+							? standings[0].votes_count
+							: 0;
 
 						return (
 							<div
@@ -53,13 +55,20 @@ export default function LeaderboardTab({
 									padding: '24px',
 									background: 'var(--dash-panel-strong)',
 								}}>
-								<div className='leaderboard-header' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+								<div
+									className='leaderboard-header'
+									style={{
+										display: 'flex',
+										justifyContent: 'space-between',
+										alignItems: 'center',
+										marginBottom: '20px',
+									}}>
 									<div>
 										<h3
 											style={{
 												fontSize: '1.3rem',
 												color: 'var(--text-white)',
-												margin: 0
+												margin: 0,
 											}}>
 											{cat.name}
 										</h3>
@@ -67,7 +76,7 @@ export default function LeaderboardTab({
 											style={{
 												fontSize: '0.85rem',
 												color: 'var(--text-muted)',
-												margin: '4px 0 0'
+												margin: '4px 0 0',
 											}}>
 											{cat.description || 'No category description'}
 										</p>
@@ -82,9 +91,7 @@ export default function LeaderboardTab({
 											fontWeight: 600,
 										}}>
 										{standings.length}{' '}
-										{standings.length === 1
-											? 'Contestant'
-											: 'Contestants'}
+										{standings.length === 1 ? 'Contestant' : 'Contestants'}
 									</span>
 								</div>
 
@@ -106,7 +113,10 @@ export default function LeaderboardTab({
 										}}>
 										{standings.map((con, index) => {
 											const isLeader = index === 0 && con.votes_count > 0;
-											const pct = maxVotesInCategory > 0 ? (con.votes_count / maxVotesInCategory) * 100 : 0;
+											const pct =
+												maxVotesInCategory > 0
+													? (con.votes_count / maxVotesInCategory) * 100
+													: 0;
 
 											return (
 												<div
@@ -118,17 +128,32 @@ export default function LeaderboardTab({
 														gap: '16px',
 														padding: '12px',
 														borderRadius: '12px',
-														background: isLeader ? 'rgba(236,72,153,0.04)' : 'rgba(255,255,255,0.02)',
-														border: isLeader ? '1px solid rgba(236,72,153,0.15)' : '1px solid transparent',
+														background: isLeader
+															? 'rgba(236,72,153,0.04)'
+															: 'rgba(255,255,255,0.02)',
+														border: isLeader
+															? '1px solid rgba(236,72,153,0.15)'
+															: '1px solid transparent',
 													}}>
-													<div className='leaderboard-item-details' style={{ display: 'flex', alignItems: 'center', gap: '16px', flexGrow: 1, minWidth: 0 }}>
+													<div
+														className='leaderboard-item-details'
+														style={{
+															display: 'flex',
+															alignItems: 'center',
+															gap: '16px',
+															flexGrow: 1,
+															minWidth: 0,
+														}}>
 														<span
 															style={{
 																fontStyle: 'italic',
 																fontWeight: 700,
 																width: '24px',
 																textAlign: 'center',
-																color: index === 0 ? 'var(--accent-pink)' : 'var(--text-muted)',
+																color:
+																	index === 0
+																		? 'var(--accent-pink)'
+																		: 'var(--text-muted)',
 															}}>
 															#{index + 1}
 														</span>
@@ -140,7 +165,7 @@ export default function LeaderboardTab({
 																overflow: 'hidden',
 																background: 'var(--bg-deep)',
 																flexShrink: 0,
-																border: '1.5px solid rgba(255, 255, 255, 0.08)'
+																border: '1.5px solid rgba(255, 255, 255, 0.08)',
 															}}>
 															<img
 																src={con.image_url || CONTESTANT_LOGO}
@@ -152,9 +177,28 @@ export default function LeaderboardTab({
 																}}
 															/>
 														</div>
-														<div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
-															<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-																<strong style={{ fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>
+														<div
+															style={{
+																display: 'flex',
+																flexDirection: 'column',
+																flexGrow: 1,
+																minWidth: 0,
+															}}>
+															<div
+																style={{
+																	display: 'flex',
+																	alignItems: 'center',
+																	flexWrap: 'wrap',
+																	gap: '6px',
+																}}>
+																<strong
+																	style={{
+																		fontSize: '0.95rem',
+																		whiteSpace: 'nowrap',
+																		overflow: 'hidden',
+																		textOverflow: 'ellipsis',
+																		maxWidth: '180px',
+																	}}>
 																	{con.name}
 																</strong>
 																{isLeader && (
@@ -171,30 +215,73 @@ export default function LeaderboardTab({
 																			borderRadius: '50px',
 																			fontWeight: 700,
 																		}}>
-																		<Crown size={10} fill='var(--accent-pink)' />{' '}
+																		<Crown
+																			size={10}
+																			fill='var(--accent-pink)'
+																		/>{' '}
 																		Leader
 																	</span>
 																)}
 															</div>
 															{maxVotesInCategory > 0 && (
-																<div className="vote-progress-container" style={{ width: '240px', maxWidth: '100%', marginTop: '6px' }}>
-																	<div className="vote-progress-bg" style={{ height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
-																		<div className="vote-progress-fill" style={{ width: `${pct}%`, height: '100%', background: isLeader ? 'var(--accent-pink)' : 'rgba(255,255,255,0.2)', borderRadius: '4px', transition: 'width 1s ease-out' }}></div>
+																<div
+																	className='vote-progress-container'
+																	style={{
+																		width: '240px',
+																		maxWidth: '100%',
+																		marginTop: '6px',
+																	}}>
+																	<div
+																		className='vote-progress-bg'
+																		style={{
+																			height: '4px',
+																			background: 'rgba(255,255,255,0.06)',
+																			borderRadius: '4px',
+																			overflow: 'hidden',
+																		}}>
+																		<div
+																			className='vote-progress-fill'
+																			style={{
+																				width: `${pct}%`,
+																				height: '100%',
+																				background: isLeader
+																					? 'var(--accent-pink)'
+																					: 'rgba(255,255,255,0.2)',
+																				borderRadius: '4px',
+																				transition: 'width 1s ease-out',
+																			}}></div>
 																	</div>
-																	<div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-																		{isLeader ? 'Leading standings' : `${(maxVotesInCategory - con.votes_count).toLocaleString()} votes behind leader`}
+																	<div
+																		style={{
+																			fontSize: '0.72rem',
+																			color: 'var(--text-muted)',
+																			marginTop: '4px',
+																		}}>
+																		{isLeader
+																			? 'Leading standings'
+																			: `${(maxVotesInCategory - con.votes_count).toLocaleString()} votes behind leader`}
 																	</div>
 																</div>
 															)}
 														</div>
 													</div>
 
-													<div className='leaderboard-item-stats' style={{ display: 'flex', gap: '16px', alignItems: 'center', flexShrink: 0 }}>
+													<div
+														className='leaderboard-item-stats'
+														style={{
+															display: 'flex',
+															gap: '16px',
+															alignItems: 'center',
+															flexShrink: 0,
+														}}>
 														<div style={{ textAlign: 'right' }}>
 															<span
 																style={{
 																	fontWeight: 700,
-																	color: index === 0 ? 'var(--accent-pink)' : 'var(--text-white)',
+																	color:
+																		index === 0
+																			? 'var(--accent-pink)'
+																			: 'var(--text-white)',
 																}}>
 																{con.votes_count.toLocaleString()}
 															</span>
@@ -207,8 +294,13 @@ export default function LeaderboardTab({
 																{con.votes_count === 1 ? 'vote' : 'votes'}
 															</span>
 														</div>
-														<div style={{ minWidth: '80px', textAlign: 'right' }}>
-															<span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+														<div
+															style={{ minWidth: '80px', textAlign: 'right' }}>
+															<span
+																style={{
+																	color: 'var(--text-muted)',
+																	fontSize: '0.85rem',
+																}}>
 																₦{(con.votes_count * 100).toLocaleString()}
 															</span>
 														</div>
