@@ -1,28 +1,6 @@
 /* Logo-aligned solid color theme */
 :root {
-	:root {
-		--bg-dark: #180920;
-		--bg-card: #24102f;
-		--bg-deep: #2d1538;
-		--text-white: #ffffff;
-		--text-muted: #c9b993;
-		--border-glass: #5a3d66;
-		--accent-purple: #5c1970;
-		--accent-pink: #8f2a6d;
-		--accent-blue: #b4871f;
-		--dash-bg: #17081e;
-		--dash-panel: #24102f;
-		--dash-panel-strong: #2c1437;
-		--dash-border: #5a3d66;
-		--dash-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-		--font-display:
-			'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-			sans-serif;
-		--font-body:
-			'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-			sans-serif;
-		--transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	}
+
 
 	/* Hide vote count badge from UI */
 	.contestant-votes-badge {
@@ -33,19 +11,21 @@
 	.dash-pill {
 		font-weight: 400;
 	}
-	--bg-card: #24102f;
-	--bg-deep: #2d1538;
-	--text-white: #ffffff;
-	--text-muted: #c9b993;
-	--border-glass: #5a3d66;
-	--accent-purple: #5c1970;
-	--accent-pink: #8f2a6d;
-	--accent-blue: #b4871f;
-	--dash-bg: #17081e;
-	--dash-panel: #24102f;
-	--dash-panel-strong: #2c1437;
-	--dash-border: #5a3d66;
-	--dash-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+	--bg-dark: #09090b;
+	--bg-card: #18181b;
+	--bg-deep: #000000;
+	--text-white: #fafafa;
+	--text-muted: #a1a1aa;
+	--border-glass: rgba(255, 255, 255, 0.08);
+	--accent-purple: #8b5cf6;
+	--accent-pink: #ec4899;
+	--accent-blue: #3b82f6;
+	--accent-emerald: #10b981;
+	--dash-bg: #09090b;
+	--dash-panel: rgba(24, 24, 27, 0.6);
+	--dash-panel-strong: rgba(39, 39, 42, 0.4);
+	--dash-border: rgba(255, 255, 255, 0.08);
+	--dash-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 	--font-display:
 		'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	--font-body:
