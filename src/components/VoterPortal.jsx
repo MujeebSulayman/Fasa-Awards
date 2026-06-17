@@ -52,11 +52,10 @@ export default function VoterPortal({ currentPath, navigate }) {
 			if (catError) throw catError;
 			setCategories(catData || []);
 
-			// Fetch Contestants
 			const { data: conData, error: conError } = await supabase
 				.from('contestants')
 				.select('*, categories(name)')
-				.order('votes_count', { ascending: false });
+				.order('name', { ascending: true });
 
 			if (conError) throw conError;
 			setContestants(conData || []);
