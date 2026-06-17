@@ -853,8 +853,6 @@ export default function VoterPortal({ currentPath, navigate }) {
 	);
 }
 
-// Contestant Card Component
-// Contestant Card Component
 function ContestantCard({ contestant, onVote }) {
 	return (
 		<div
