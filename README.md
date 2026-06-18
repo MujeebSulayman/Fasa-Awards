@@ -1,16 +1,63 @@
-# React + Vite
+# Faculty of Art Voting App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Voting application for the Faculty of Art used to run awards and contests. Built with Vite + React and Supabase. Includes an admin portal, voter portal, and a Supabase Edge Function to verify Paystack transactions and record votes.
 
-Currently, two official plugins are available:
+**Tech Stack:**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Frontend: React (Vite)
+- Backend / Realtime DB: Supabase
+- Payments: Paystack (verification via Supabase Edge Function)
 
-## React Compiler
+**Quick Start**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Requirements:
 
-## Expanding the ESLint configuration
+- Node.js 18+ and npm
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Install and run locally:
+
+```bash
+npm install
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+npm run preview
+```
+
+Linting:
+
+```bash
+npm run lint
+```
+
+**Environment variables**
+
+Frontend (.env or Vite environment):
+
+- `VITE_SUPABASE_URL` — your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` — Supabase anon/public key
+
+Server / Edge Function (set in Supabase or server environment):
+
+- `SUPABASE_URL` — your Supabase project URL (used by the function)
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key for privileged DB operations
+- `PAYSTACK_SECRET_KEY` — Paystack secret key used by the `verify-payment` function
+
+**Supabase Edge Function (payment verification)**
+
+The project includes an Edge Function at `supabase/functions/verify-payment/index.ts` which:
+
+- Verifies a Paystack transaction reference
+- Confirms the paid amount matches the expected amount for the requested vote count
+- Calls a Postgres RPC (`record_vote`) to atomically record votes and update contestant totals
+
+Deploy the function with the Supabase CLI (example):
+
+```bash
+supabase functions deploy verify-payment --project-ref <your-project-ref>
+supabase secrets set PAYSTACK_SECRET_KEY=sk_test_xxx
+```
