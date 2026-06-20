@@ -356,5 +356,5 @@ export default function AdminPortal({ onNavigateToVoter }) {
 				</div>
 			</div>
 		</div>
-	);
+ 	);
 }
