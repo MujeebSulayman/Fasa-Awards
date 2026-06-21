@@ -151,6 +151,28 @@ export default function VoterPortal({ currentPath, navigate }) {
 			amount: amountInKobo,
 			currency: 'NGN',
 			ref: transactionReference,
+			metadata: {
+				contestant_id: votingContestant.id,
+				votes_count: votesCount,
+				email: payerEmail,
+				custom_fields: [
+					{
+						display_name: 'Contestant ID',
+						variable_name: 'contestant_id',
+						value: votingContestant.id,
+					},
+					{
+						display_name: 'Votes Count',
+						variable_name: 'votes_count',
+						value: votesCount,
+					},
+					{
+						display_name: 'Payer Email',
+						variable_name: 'email',
+						value: payerEmail,
+					},
+				],
+			},
 			callback: function (response) {
 				// Use a non-async callback (some Paystack builds validate typeof === 'function')
 				// Delegate to the async record function and handle errors there.
@@ -197,13 +219,14 @@ export default function VoterPortal({ currentPath, navigate }) {
 		amount,
 	) => {
 		try {
-			// Record vote (secure RPC)
-			const { data, error } = await supabase.rpc('record_vote', {
-				p_contestant_id: contestantId,
-				p_email: email,
-				p_reference: reference,
-				p_votes_count: votes,
-				p_amount: amount,
+			// Record vote via verify-payment Edge Function (calls secure RPC internally after validation)
+			const { data, error } = await supabase.functions.invoke('verify-payment', {
+				body: {
+					reference,
+					contestantId,
+					votesCount: votes,
+					email,
+				},
 			});
 
 			if (error) throw error;
@@ -440,8 +463,8 @@ export default function VoterPortal({ currentPath, navigate }) {
 										<button
 											type='button'
 											className='stepper-btn'
-											onClick={() => setVotesCount((v) => Math.min(100, v + 1))}
-											disabled={isProcessingPayment || votesCount >= 100}
+											onClick={() => setVotesCount((v) => Math.min(1000, v + 1))}
+											disabled={isProcessingPayment || votesCount >= 1000}
 											aria-label='Increase'
 											style={{ width: '50px', height: '46px' }}>
 											+
@@ -453,7 +476,7 @@ export default function VoterPortal({ currentPath, navigate }) {
 								<div
 									className='vote-shortcuts'
 									style={{ gap: '12px' }}>
-									{[1, 3, 5, 10, 20, 50, 100].map((val) => (
+									{[1, 5, 10, 20, 50, 100, 200, 300, 500].map((val) => (
 										<button
 											key={val}
 											type='button'
