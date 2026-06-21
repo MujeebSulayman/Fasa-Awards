@@ -884,7 +884,7 @@ function ContestantCard({ contestant, onVote }) {
 					)}
 					<h3>{contestant.name}</h3>
 				</div>
-				{/* The button is retained for accessibility but hidden */}
+
 				<button
 					className='btn btn-outline-glow'
 					style={{ width: '100%', marginTop: '15px' }}
