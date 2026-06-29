@@ -6,7 +6,6 @@ import AdminPortal from './components/AdminPortal.jsx';
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
-  // Custom router state listener
   useEffect(() => {
     const handleLocationChange = () => {
       setCurrentPath(window.location.pathname);
