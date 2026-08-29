@@ -145,7 +145,7 @@ export default function VoterPortal({ currentPath, navigate }) {
 			return;
 		}
 
-		const flutterwavePublicKey = import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY;
+		const flutterwavePublicKey = import.meta.env.FLUTTERWAVE_PUBLIC_KEY;
 		if (!flutterwavePublicKey) {
 			showToast(
 				'Payment is not available right now. Please try again later.',
