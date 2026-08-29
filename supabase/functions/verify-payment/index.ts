@@ -1,6 +1,7 @@
-// Supabase Edge Function for Paystack Transaction Verification
+// Supabase Edge Function for Flutterwave Transaction Verification
 // Deploy using: supabase functions deploy verify-payment --project-ref your-project-ref
-// Set your secret key: supabase secrets set PAYSTACK_SECRET_KEY=sk_live_xxxx or sk_test_xxxx
+// Set your secret key: supabase secrets set FLUTTERWAVE_SECRET_KEY=FLWSECK_TEST-xxxx or FLWSECK-xxxx
+// Set your webhook hash: supabase secrets set FLUTTERWAVE_WEBHOOK_SECRET_HASH=your-webhook-hash
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.8';
@@ -8,25 +9,22 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.8';
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Headers':
-		'authorization, x-client-info, apikey, content-type, x-paystack-signature',
+		'authorization, x-client-info, apikey, content-type, verif-hash',
 };
 
-interface PaystackWebhookPayload {
+interface FlutterwaveWebhookPayload {
 	event: string;
 	data: {
-		reference: string;
+		id: number;
+		tx_ref: string;
 		amount: number;
+		status: string;
 		customer?: {
 			email: string;
 		};
-		metadata?: {
+		meta?: {
 			contestant_id?: string;
 			votes_count?: string | number;
-			custom_fields?: Array<{
-				display_name: string;
-				variable_name: string;
-				value: string | number;
-			}>;
 		};
 	};
 }
@@ -38,50 +36,18 @@ interface ClientVerificationRequest {
 	email: string;
 }
 
-// HMAC SHA-512 Verification for Paystack Webhooks
-async function verifyPaystackSignature(
-	bodyText: string,
-	signature: string | null,
-	secretKey: string
-): Promise<boolean> {
-	if (!signature) return false;
-
-	const encoder = new TextEncoder();
-	const keyBuf = encoder.encode(secretKey);
-	const bodyBuf = encoder.encode(bodyText);
-
-	const key = await crypto.subtle.importKey(
-		'raw',
-		keyBuf,
-		{ name: 'HMAC', hash: 'SHA-512' },
-		false,
-		['sign']
-	);
-
-	const signatureBuf = await crypto.subtle.sign(
-		'HMAC',
-		key,
-		bodyBuf
-	);
-
-	const hashArray = Array.from(new Uint8Array(signatureBuf));
-	const hexSignature = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-	return hexSignature === signature;
-}
-
 serve(async (req: Request): Promise<Response> => {
 	if (req.method === 'OPTIONS') {
 		return new Response('ok', { headers: corsHeaders });
 	}
 
 	try {
-		const paystackSecret = Deno.env.get('PAYSTACK_SECRET_KEY');
-		if (!paystackSecret) {
+		const flutterwaveSecret = Deno.env.get('FLUTTERWAVE_SECRET_KEY');
+		if (!flutterwaveSecret) {
 			return new Response(
 				JSON.stringify({
 					success: false,
-					message: 'Server misconfiguration: PAYSTACK_SECRET_KEY not set',
+					message: 'Server misconfiguration: FLUTTERWAVE_SECRET_KEY not set',
 				}),
 				{
 					status: 500,
@@ -95,22 +61,20 @@ serve(async (req: Request): Promise<Response> => {
 		const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 		const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-		const paystackSignature = req.headers.get('x-paystack-signature');
+		const flutterwaveSignature = req.headers.get('verif-hash');
 
 		let reference = '';
 		let contestantId = '';
 		let votesCount = 0;
 		let email = '';
-		let actualAmountKobo = 0;
+		let actualAmountNaira = 0;
 
 		// -------------------------------------------------------------
-		// CASE A: Request is a Webhook from Paystack (has signature)
+		// CASE A: Request is a Webhook from Flutterwave (has verif-hash)
 		// -------------------------------------------------------------
-		if (paystackSignature) {
-			const bodyText = await req.text();
-			const isValid = await verifyPaystackSignature(bodyText, paystackSignature, paystackSecret);
-
-			if (!isValid) {
+		if (flutterwaveSignature) {
+			const webhookSecretHash = Deno.env.get('FLUTTERWAVE_WEBHOOK_SECRET_HASH');
+			if (!webhookSecretHash || flutterwaveSignature !== webhookSecretHash) {
 				return new Response(
 					JSON.stringify({ success: false, message: 'Invalid webhook signature' }),
 					{
@@ -120,10 +84,11 @@ serve(async (req: Request): Promise<Response> => {
 				);
 			}
 
-			const payload: PaystackWebhookPayload = JSON.parse(bodyText);
+			const bodyText = await req.text();
+			const payload: FlutterwaveWebhookPayload = JSON.parse(bodyText);
 
-			// We only process charge.success events
-			if (payload.event !== 'charge.success') {
+			// We only process successful charge events
+			if (payload.event !== 'charge.completed' || payload.data.status !== 'successful') {
 				return new Response(
 					JSON.stringify({ success: true, message: `Ignored event: ${payload.event}` }),
 					{
@@ -134,15 +99,12 @@ serve(async (req: Request): Promise<Response> => {
 			}
 
 			const data = payload.data;
-			reference = data.reference;
-			actualAmountKobo = data.amount;
+			reference = data.tx_ref;
 			email = data.customer?.email ?? '';
 
-			const metadata = data.metadata;
-			contestantId = metadata?.contestant_id || 
-				metadata?.custom_fields?.find(f => f.variable_name === 'contestant_id')?.value?.toString() || '';
-			const votesVal = metadata?.votes_count || 
-				metadata?.custom_fields?.find(f => f.variable_name === 'votes_count')?.value || '0';
+			const meta = data.meta;
+			contestantId = meta?.contestant_id?.toString() || '';
+			const votesVal = meta?.votes_count || '0';
 			votesCount = typeof votesVal === 'number' ? votesVal : parseInt(votesVal, 10);
 
 			if (!reference || !contestantId || !votesCount || !email) {
@@ -157,7 +119,38 @@ serve(async (req: Request): Promise<Response> => {
 					},
 				);
 			}
-		} 
+
+			// Re-verify the transaction directly with Flutterwave using its id, not just the webhook payload
+			const verifyUrl = `https://api.flutterwave.com/v3/transactions/${data.id}/verify`;
+			const verifyResponse = await fetch(verifyUrl, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${flutterwaveSecret}`,
+					'Content-Type': 'application/json',
+				},
+			});
+			const verifyData = await verifyResponse.json();
+
+			if (
+				!verifyResponse.ok ||
+				verifyData.status !== 'success' ||
+				verifyData.data.status !== 'successful' ||
+				verifyData.data.tx_ref !== reference
+			) {
+				return new Response(
+					JSON.stringify({
+						success: false,
+						message: 'Payment verification failed with Flutterwave',
+					}),
+					{
+						status: 400,
+						headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+					},
+				);
+			}
+
+			actualAmountNaira = verifyData.data.amount;
+		}
 		// -------------------------------------------------------------
 		// CASE B: Direct Request from Client Frontend (no signature)
 		// -------------------------------------------------------------
@@ -181,27 +174,27 @@ serve(async (req: Request): Promise<Response> => {
 				);
 			}
 
-			// Query Paystack Verification Endpoint directly to confirm this reference is valid
-			const paystackUrl = `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`;
-			const paystackResponse = await fetch(paystackUrl, {
+			// Query Flutterwave Verification Endpoint directly to confirm this reference is valid
+			const flutterwaveUrl = `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(reference)}`;
+			const flutterwaveResponse = await fetch(flutterwaveUrl, {
 				method: 'GET',
 				headers: {
-					Authorization: `Bearer ${paystackSecret}`,
+					Authorization: `Bearer ${flutterwaveSecret}`,
 					'Content-Type': 'application/json',
 				},
 			});
 
-			const paystackData = await paystackResponse.json();
+			const flutterwaveData = await flutterwaveResponse.json();
 
 			if (
-				!paystackResponse.ok ||
-				!paystackData.status ||
-				paystackData.data.status !== 'success'
+				!flutterwaveResponse.ok ||
+				flutterwaveData.status !== 'success' ||
+				flutterwaveData.data?.status !== 'successful'
 			) {
 				return new Response(
 					JSON.stringify({
 						success: false,
-						message: 'Payment verification failed with Paystack',
+						message: 'Payment verification failed with Flutterwave',
 					}),
 					{
 						status: 400,
@@ -210,18 +203,18 @@ serve(async (req: Request): Promise<Response> => {
 				);
 			}
 
-			actualAmountKobo = paystackData.data.amount;
+			actualAmountNaira = flutterwaveData.data.amount;
 		}
 
 		// -------------------------------------------------------------
-		// Verify amount matches expected value (1 vote = 100 Naira = 10000 kobo)
+		// Verify amount matches expected value (1 vote = 100 Naira)
 		// -------------------------------------------------------------
-		const expectedAmountKobo = votesCount * 100 * 100;
-		if (actualAmountKobo < expectedAmountKobo) {
+		const expectedAmountNaira = votesCount * 100;
+		if (actualAmountNaira < expectedAmountNaira) {
 			return new Response(
 				JSON.stringify({
 					success: false,
-					message: `Incorrect payment amount. Expected at least ${expectedAmountKobo} kobo, received ${actualAmountKobo} kobo.`,
+					message: `Incorrect payment amount. Expected at least ${expectedAmountNaira} NGN, received ${actualAmountNaira} NGN.`,
 				}),
 				{
 					status: 400,
@@ -261,7 +254,7 @@ serve(async (req: Request): Promise<Response> => {
 			);
 		} else if (dbData && dbData.message && dbData.message.includes('already been used')) {
 			// This transaction was already processed successfully in a previous call (idempotency check).
-			// Return 200 OK so that Paystack webhooks stop retrying and frontend knows it is success.
+			// Return 200 OK so that Flutterwave webhooks stop retrying and frontend knows it is success.
 			return new Response(
 				JSON.stringify({
 					success: true,
@@ -281,16 +274,16 @@ serve(async (req: Request): Promise<Response> => {
 				{
 					status: 400,
 					headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-					},
-				);
-			}
-		} catch (error: any) {
-			return new Response(
-				JSON.stringify({ success: false, message: error.message }),
-				{
-					status: 500,
-					headers: { ...corsHeaders, 'Content-Type': 'application/json' },
 				},
 			);
 		}
-	});
+	} catch (error: any) {
+		return new Response(
+			JSON.stringify({ success: false, message: error.message }),
+			{
+				status: 500,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+			},
+		);
+	}
+});

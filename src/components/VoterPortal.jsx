@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import confetti from 'canvas-confetti';
 import { supabase } from '../supabaseClient';
 import CategoryDropdown from './CategoryDropdown';
 import {
@@ -33,6 +34,11 @@ export default function VoterPortal({ currentPath, navigate }) {
 
 	// Toast notifications
 	const [toast, setToast] = useState(null);
+
+	// Tracks whether the Flutterwave callback already handled this checkout,
+	// so onclose (which fires on every modal close, success or cancel) doesn't
+	// also treat a successful payment as a cancellation.
+	const paymentHandledRef = useRef(false);
 
 	const showToast = (message, type = 'success') => {
 		setToast({ message, type });
@@ -75,6 +81,35 @@ export default function VoterPortal({ currentPath, navigate }) {
 		fetchData();
 	}, [fetchData]);
 
+	useEffect(() => {
+		if (!showSuccessModal) return;
+
+		const duration = 2000;
+		const end = Date.now() + duration;
+		const colors = ['#ec4899', '#a855f7', '#ffffff'];
+
+		(function frame() {
+			confetti({
+				particleCount: 3,
+				angle: 60,
+				spread: 55,
+				origin: { x: 0 },
+				colors,
+			});
+			confetti({
+				particleCount: 3,
+				angle: 120,
+				spread: 55,
+				origin: { x: 1 },
+				colors,
+			});
+
+			if (Date.now() < end) {
+				requestAnimationFrame(frame);
+			}
+		})();
+	}, [showSuccessModal]);
+
 	// Sync contestant detail page with URL path
 	useEffect(() => {
 		const match = currentPath.match(/^\/contestant\/([a-zA-Z0-9-]+)$/);
@@ -104,14 +139,14 @@ export default function VoterPortal({ currentPath, navigate }) {
 		navigate('/contestants');
 	};
 
-	const handlePaystackPayment = () => {
+	const handleFlutterwavePayment = () => {
 		if (votesCount < 1) {
 			showToast('You must purchase at least 1 vote.', 'error');
 			return;
 		}
 
-		const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
-		if (!paystackPublicKey) {
+		const flutterwavePublicKey = import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY;
+		if (!flutterwavePublicKey) {
 			showToast(
 				'Payment is not available right now. Please try again later.',
 				'error',
@@ -120,9 +155,8 @@ export default function VoterPortal({ currentPath, navigate }) {
 		}
 
 		const totalAmount = votesCount * 100; // 100 Naira per vote
-		const amountInKobo = totalAmount * 100; // Paystack takes amount in kobo
 
-		if (!window.PaystackPop) {
+		if (typeof window.FlutterwaveCheckout !== 'function') {
 			showToast(
 				'Payment service failed to load. Please refresh and try again.',
 				'error',
@@ -131,78 +165,65 @@ export default function VoterPortal({ currentPath, navigate }) {
 		}
 
 		setIsProcessingPayment(true);
+		paymentHandledRef.current = false;
 
 		const transactionReference = createTransactionReference();
-		// Paystack requires a valid email format. .local is rejected by Paystack validation.
 		const payerEmail = `anonymous+${transactionReference}@example.com`;
 
-		if (typeof window.PaystackPop.setup !== 'function') {
-			setIsProcessingPayment(false);
-			showToast(
-				'Payment service failed to initialize. Please refresh and try again.',
-				'error',
-			);
-			return;
-		}
-
-		const handler = window.PaystackPop.setup({
-			key: paystackPublicKey,
-			email: payerEmail,
-			amount: amountInKobo,
-			currency: 'NGN',
-			ref: transactionReference,
-			metadata: {
-				contestant_id: votingContestant.id,
-				votes_count: votesCount,
-				email: payerEmail,
-				custom_fields: [
-					{
-						display_name: 'Contestant ID',
-						variable_name: 'contestant_id',
-						value: votingContestant.id,
-					},
-					{
-						display_name: 'Votes Count',
-						variable_name: 'votes_count',
-						value: votesCount,
-					},
-					{
-						display_name: 'Payer Email',
-						variable_name: 'email',
-						value: payerEmail,
-					},
-				],
-			},
-			callback: function (response) {
-				// Use a non-async callback (some Paystack builds validate typeof === 'function')
-				// Delegate to the async record function and handle errors there.
-				handleRecordVote(
-					votingContestant.id,
-					payerEmail,
-					response.reference,
-					votesCount,
-					totalAmount,
-				).catch((err) => {
-					console.error('Error recording vote after payment:', err);
-					showToast(
-						'Payment succeeded but recording failed. Contact support.',
-						'error',
-					);
-				});
-			},
-			onClose: function () {
-				setIsProcessingPayment(false);
-				showToast('Payment cancelled by user.', 'error');
-			},
-		});
-
 		try {
-			if (!handler || typeof handler.openIframe !== 'function') {
-				throw new Error('Payment handler not available');
-			}
-			handler.openIframe();
+			window.FlutterwaveCheckout({
+				public_key: flutterwavePublicKey,
+				tx_ref: transactionReference,
+				amount: totalAmount,
+				currency: 'NGN',
+				payment_options: 'card, banktransfer, ussd',
+				customer: {
+					email: payerEmail,
+				},
+				meta: {
+					contestant_id: votingContestant.id,
+					votes_count: votesCount,
+				},
+				customizations: {
+					title: 'Fasa Awards',
+					description: `${votesCount} vote(s) for ${votingContestant.name}`,
+				},
+				callback: function (response) {
+					paymentHandledRef.current = true;
+
+					const txRef = response?.data?.txRef ?? response?.tx_ref;
+					const status = response?.data?.status ?? response?.status;
+
+					if (!txRef || (status && status !== 'successful' && status !== 'completed')) {
+						setIsProcessingPayment(false);
+						showToast('Payment was not successful.', 'error');
+						return;
+					}
+
+					handleRecordVote(
+						votingContestant.id,
+						payerEmail,
+						txRef,
+						votesCount,
+						totalAmount,
+					).catch((err) => {
+						console.error('Error recording vote after payment:', err);
+						showToast(
+							'Payment succeeded but recording failed. Contact support.',
+							'error',
+						);
+					});
+				},
+				onclose: function () {
+					// Flutterwave calls onclose after every checkout, including a
+					// successful one where callback already fired. Only treat this
+					// as a user cancellation if callback never ran.
+					if (paymentHandledRef.current) return;
+					setIsProcessingPayment(false);
+				},
+			});
 		} catch (err) {
-			console.error('Paystack integration error:', err);
+			console.error('Flutterwave integration error:', err);
 			setIsProcessingPayment(false);
 			showToast(
 				'Payment service failed to initialize. Please refresh and try again.',
@@ -529,7 +550,7 @@ export default function VoterPortal({ currentPath, navigate }) {
 								<button
 									className='btn btn-primary'
 									style={{ flex: 2, padding: '14px' }}
-									onClick={handlePaystackPayment}
+									onClick={handleFlutterwavePayment}
 									disabled={isProcessingPayment}>
 									{isProcessingPayment ? (
 										<>
